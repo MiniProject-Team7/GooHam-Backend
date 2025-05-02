@@ -1,5 +1,6 @@
 package com.uplus.ureka.jwt;
 
+import com.uplus.ureka.UnAuthorizedException;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.MalformedJwtException;
@@ -8,47 +9,64 @@ import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import javax.crypto.SecretKey;
 import jakarta.servlet.http.HttpServletRequest;  // 여기를 javax에서 jakarta로 변경
-import java.security.Key;
+
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 @Component
 public class JwtUtils {
     private static final Logger logger = LoggerFactory.getLogger(JwtUtils.class);
 
-    private static final String secretKey = "dXJla2EtZnJvbnRlbmQtc2VjcmV0LWtleS0xMjM0NTY=";
+    @Value("${jwt.secret}")
+    private String SALT;
 
     //accessToken 만료시간 설정
     public final static long ACCESS_TOKEN_VALIDATION_SECOND = 1000L*60*60*12; //12시간
+    public final static long REFRESH_TOKEN_VALIDATION_SECOND = 1000L*60*60*24*30; //12시간
     public static final String AUTHORIZATION_HEADER = "Authorization"; //헤더 이름
 
-    //액세스 토큰 생성 메서드
-    public String createAccessToken(String member_id, String name){
-        System.out.println("createAccessToken");
+    private SecretKey getSigningKey() {
+        byte[] keyBytes = SALT.getBytes(StandardCharsets.UTF_8);
+        return Keys.hmacShaKeyFor(keyBytes);
+    }
 
-        // 토큰 만료 시간 설정(access token)
+    // 공통 JWT 생성 메서드
+    private String generateToken(String subject, String tokenType, long validityMillis) {
         Date now = new Date();
-        Date expiration = new Date(now.getTime()+ ACCESS_TOKEN_VALIDATION_SECOND);
+        Date expiration = new Date(now.getTime() + validityMillis);
 
-        // JWT 생성 AccessToken 생성하여 반환, member_id를 주체로 함
         return Jwts.builder()
-                .setSubject(member_id) // 이 부분에서 "sub" 필드로 member_id를 설정
-                .claim("name", name) // 이 부분에서 "name" 필드로 name 값을 설정
+                .setSubject(subject)
+                .claim("tokenType", tokenType)
                 .setIssuedAt(now)
                 .setExpiration(expiration)
-                .signWith(SignatureAlgorithm.HS256, secretKey)
+                .signWith(getSigningKey())
                 .compact();
+    }
+
+    // Access Token 생성
+    public String createAccessToken(String userEmail) {
+        return generateToken(userEmail, "ACCESS", ACCESS_TOKEN_VALIDATION_SECOND);
+    }
+
+    // Refresh Token 생성
+    public String createRefreshToken(String userEmail) {
+        return generateToken(userEmail, "REFRESH", REFRESH_TOKEN_VALIDATION_SECOND);
     }
 
     //토큰 유효성 검증 메서드
     public boolean validateToken(String token){
         //토큰 파싱 후 발생하는 예외를 캐치하여 문제가 있으면 false, 정상이면 true 반환
         try{
-            Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(token);
+            Jwts.parserBuilder().setSigningKey(getSigningKey()).build().parseClaimsJws(token);
             return true;
         }
         catch (SignatureException e){
@@ -67,17 +85,10 @@ public class JwtUtils {
     }
 
     // 토큰에서 member_id를 추출하여 반환하는 메소드
-    public String getId(String token){
-        System.out.println("getId");
+    public String getUserEmail(String token){
+        System.out.println("getUserEmail");
 
-        return Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(token).getBody().getSubject();
-    }
-
-    // 토큰에서 name을 추출하여 반환하는 메소드
-    public String getName(String token){
-        System.out.println("getName");
-
-        return Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(token).getBody().get("name").toString();
+        return Jwts.parserBuilder().setSigningKey(SALT).build().parseClaimsJws(token).getBody().getSubject();
     }
 
     // HttpServletRequest에서 Authorization Header를 통해 access token을 추출하는 메서드입니다.
@@ -88,6 +99,16 @@ public class JwtUtils {
         }
         return null;
     }
+
+    ////TODO 10. Access Token 만료시 Refresh Token을 이용해 새로운 Access Token 발급하는 메서드 작성하기
+    public String generateAccessTokenFromRefreshToken(String refreshToken) {
+        if (!validateToken(refreshToken)) {
+            throw new UnAuthorizedException(); // Refresh Token이 유효하지 않으면 예외 발생
+        }
+        String userId = getUserEmail(refreshToken);
+        return createAccessToken(userId); // 새로운 Access Token 생성
+    }
+
 
     public String determineRedirectURI(HttpServletRequest httpServletRequest, String memberURI, String nonMemberURI) {
         String token = getAccessToken(httpServletRequest);
