@@ -27,7 +27,7 @@ public class MemberDTO {
 
     //private boolean member_sns;     //소셜로그인 여부 (default = false)
 
-    private String verificationCode; //인증번호
+    private String verification_code; //인증번호
 
 
     private int delflag;

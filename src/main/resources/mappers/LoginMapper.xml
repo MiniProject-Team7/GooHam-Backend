@@ -15,13 +15,13 @@
 
     <update id="updateVerificationCode">
         UPDATE USERS
-        SET verificationCode = #{token}
+        SET verification_code = #{token}
         WHERE member_email = #{member_email}
     </update>
 
     <update id="clearVerificationCode">
         UPDATE USERS
-        SET verificationCode = NULL
+        SET verification_code = NULL
         WHERE member_email = #{member_email}
     </update>
 </mapper>
