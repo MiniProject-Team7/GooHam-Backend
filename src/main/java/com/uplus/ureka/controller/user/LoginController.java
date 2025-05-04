@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.web.bind.annotation.*;
@@ -129,8 +130,17 @@ public class LoginController {
         try {
             String email = request.get("member_email");
 
-            // 토큰 삭제
+            // DB에서 refreshToken 삭제
             loginServiceImpl.logout(email);
+
+            // 쿠키 제거
+            ResponseCookie deleteCookie = ResponseCookie.from("Refresh_Token", "")
+                    .path("/")
+                    .maxAge(0)
+                    .httpOnly(true)
+                    .secure(true)
+                    .sameSite("Strict")
+                    .build();
 
             // 응답 생성
             Map<String, Object> response = new HashMap<>();
@@ -138,7 +148,9 @@ public class LoginController {
             response.put("message", "로그아웃 성공");
             response.put("data", null);
 
-            return ResponseEntity.ok(response);
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.SET_COOKIE, deleteCookie.toString())
+                    .body(response);
         } catch (Exception e) {
             e.printStackTrace();
 
