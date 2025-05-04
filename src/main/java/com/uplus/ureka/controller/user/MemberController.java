@@ -1,5 +1,6 @@
 package com.uplus.ureka.controller.user;
 
+import com.uplus.ureka.dto.user.member.MemberSignupDTO;
 import com.uplus.ureka.service.user.member.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -10,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -36,13 +38,14 @@ public class MemberController {
     //회원가입
     @PostMapping("/join")
     @ResponseBody
-    public ResponseEntity<Map<String, Object>> JoinRegister(@RequestBody Map<String, String> requestBody) {
-        String member_password = requestBody.get("member_password");
-        String member_name = requestBody.get("member_name");
-        String member_nickname = requestBody.get("member_nickname");
-        String member_email = requestBody.get("member_email");
-        String member_phone = requestBody.get("member_phone");
-        String member_introduce = requestBody.get("member_introduce");
+    public ResponseEntity<Map<String, Object>> JoinRegister(@RequestBody MemberSignupDTO memberSignupDTO) {
+        String member_password = memberSignupDTO.getMember_password();
+        String member_name = memberSignupDTO.getMember_name();
+        String member_nickname = memberSignupDTO.getMember_nickname();
+        String member_email = memberSignupDTO.getMember_email();
+        String member_phone = memberSignupDTO.getMember_phone();
+        String member_introduce = memberSignupDTO.getMember_introduce();
+        LocalDate birth_date = memberSignupDTO.getBirth_date();
 
         // 이메일 중복 검사
         if (memberService.isEmailDuplicated(member_email)) {
@@ -61,7 +64,7 @@ public class MemberController {
         }
 
 
-        boolean result = memberService.register(member_email, member_password, member_name, member_nickname, member_phone, member_introduce);
+        boolean result = memberService.register(member_email, member_password, member_name, member_nickname, member_phone, member_introduce, birth_date);
 //        if (result) {
 //            // 성공 메시지를 담은 응답 생성
 //            Map<String, Object> response = new HashMap<>();
@@ -85,6 +88,7 @@ public class MemberController {
             userData.put("member_name", member_name);
             userData.put("member_phone", member_phone);
             userData.put("member_introduce", member_introduce);
+            userData.put("birth_date", birth_date);
             userData.put("created_at", java.time.LocalDateTime.now().toString());
 
             response.put("status", "success");
