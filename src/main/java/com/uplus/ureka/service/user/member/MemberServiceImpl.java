@@ -1,6 +1,7 @@
 package com.uplus.ureka.service.user.member;
 
 import com.uplus.ureka.dto.user.member.MemberDTO;
+import com.uplus.ureka.dto.user.member.MemberSignupDTO;
 import com.uplus.ureka.repository.user.member.MemberMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,6 +11,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+
 @Service
 @Transactional
 public class MemberServiceImpl implements MemberService{
@@ -18,10 +21,8 @@ public class MemberServiceImpl implements MemberService{
     @Autowired
     private  MemberMapper memberMapper;
 
-
-/*    @Autowired
-    private PasswordEncoder passwordEncoder;*/
-
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     /* *//* 암호화 적용 O *//*
     @Override
@@ -52,19 +53,24 @@ public class MemberServiceImpl implements MemberService{
     }*/
 
 
-    //암호화 적용 X
+    //암호화 적용
 
     @Override
-    public boolean register(String member_email, String member_password, String member_name, String member_nickname,
-                            String member_phone, String member_introduce) {
+    public boolean register(String member_email, String member_password, String member_name,
+                            String member_nickname, String member_phone, String member_introduce,
+                            LocalDate birth_date) {
 
-        MemberDTO memberDTO = new MemberDTO();
-        memberDTO.setMember_password(member_password);
+        MemberSignupDTO memberDTO = new MemberSignupDTO();
+        logger.info("암호화 전 비밀번호 : "+ member_password);
+        String encodedPassword = passwordEncoder.encode(member_password);
+        logger.info("암호화 후 비밀번호 : "+ encodedPassword);
+        memberDTO.setMember_password(encodedPassword);
         memberDTO.setMember_name(member_name);
         memberDTO.setMember_nickname(member_nickname);
         memberDTO.setMember_email(member_email);
         memberDTO.setMember_phone(member_phone);
         memberDTO.setMember_introduce(member_introduce);
+        memberDTO.setBirth_date(birth_date);
 
         int result = memberMapper.insert(memberDTO);
         return result == 1;
@@ -85,7 +91,5 @@ public class MemberServiceImpl implements MemberService{
         logger.info("서비스 넘어온 email : "+ member_email);
         return memberMapper.isEmailDuplicated(member_email);
     }
-
-
 
 }
