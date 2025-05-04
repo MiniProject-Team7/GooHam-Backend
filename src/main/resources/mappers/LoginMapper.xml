@@ -15,13 +15,31 @@
 
     <update id="updateVerificationCode">
         UPDATE USERS
-        SET verificationCode = #{token}
+        SET verification_code = #{token}
         WHERE member_email = #{member_email}
     </update>
 
     <update id="clearVerificationCode">
         UPDATE USERS
-        SET verificationCode = NULL
+        SET verification_code = NULL
         WHERE member_email = #{member_email}
+    </update>
+
+    <update id="saveRefreshToken" parameterType="map">
+        update USERS
+        set verification_code = #{token}
+        where member_email = #{member_email}
+    </update>
+
+    <select id="getRefreshToken" parameterType="string" resultType="string">
+        select verification_code
+        from USERS
+        where member_email = #{member_email}
+    </select>
+
+    <update id="deleteRefreshToken" parameterType="string">
+        update USERS
+        set verification_code = ''
+        where member_email = #{member_email}
     </update>
 </mapper>
