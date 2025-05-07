@@ -5,11 +5,11 @@
 
 
     <update id="updateVerificationCode">
-        UPDATE USERS SET verificationcode = #{code} WHERE member_email = #{email} AND delflag != 1
+        UPDATE USERS SET verification_code = #{code} WHERE member_email = #{email} AND delflag != 1
     </update>
 
     <select id="getPasswordByEmailAndVerification" resultType="string">
-        SELECT member_password FROM USERS WHERE member_email = #{email} AND verificationcode = #{code}
+        SELECT member_password FROM USERS WHERE member_email = #{email} AND verification_code = #{code}
     </select>
 
     <select id="getDelflagByEmail" resultType="integer">

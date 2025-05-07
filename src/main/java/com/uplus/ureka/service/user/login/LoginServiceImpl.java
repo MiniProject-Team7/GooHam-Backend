@@ -3,13 +3,12 @@ package com.uplus.ureka.service.user.login;
 import com.uplus.ureka.dto.user.login.LoginDTO;
 import com.uplus.ureka.dto.user.member.MemberDTO;
 import com.uplus.ureka.exception.CustomExceptions;
-import com.uplus.ureka.exception.LoginException;
 import  com.uplus.ureka.repository.user.login.LoginMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,6 +21,7 @@ public class LoginServiceImpl implements LoginService, UserDetailsService {
 
     private final LoginMapper loginMapper;
     private final PasswordEncoder passwordEncoder;
+    private static final Logger logger = LoggerFactory.getLogger(LoginServiceImpl.class);
 
     @Autowired
     public LoginServiceImpl(LoginMapper loginMapper, PasswordEncoder passwordEncoder) {
@@ -43,11 +43,11 @@ public class LoginServiceImpl implements LoginService, UserDetailsService {
     }
 
 
-    public MemberDTO checkLoin(String username, String password) throws CustomExceptions {
+    public MemberDTO checkLogin(String username, String password) throws CustomExceptions {
         MemberDTO user = loginMapper.findByUsername2(username);
 
-        System.out.println("DB에서 조회된 이메일: " + (user != null ? user.getMember_email() : "NULL"));
-        System.out.println("DB에서 조회된 비밀번호: " + (user != null ? user.getMember_password() : "NULL"));
+        logger.debug("DB에서 조회된 이메일: " + (user != null ? user.getMember_email() : "NULL"));
+        logger.debug("DB에서 조회된 비밀번호: " + (user != null ? user.getMember_password() : "NULL"));
 
 
         if (user == null) {
@@ -61,12 +61,12 @@ public class LoginServiceImpl implements LoginService, UserDetailsService {
         }
         // password check
 
-        if(!password.equals(user.getMember_password()))
-            throw new CustomExceptions("password error");
+//        if(!password.equals(user.getMember_password()))
+//            throw new CustomExceptions("password error");
 
- /*      // 비밀번호 확인(암호화된 것 )
+       // 비밀번호 확인
         if(!passwordEncoder.matches(password, user.getMember_password()))
-            throw new LoginException("password error");*/
+            throw new CustomExceptions("password error");
 
         return user;
     }
@@ -78,4 +78,25 @@ public class LoginServiceImpl implements LoginService, UserDetailsService {
     public void logout(String email) {
         loginMapper.clearVerificationCode(email);
     }
+
+
+    @Override
+    public void saveRefreshToken(String userEmail, String refreshToken) {
+        logger.debug("saveRefreshToken:userEmail-{}  refreshToken-{}",userEmail, refreshToken);
+
+        loginMapper.saveRefreshToken(userEmail, refreshToken);
+    }
+
+    @Override
+    public String getRefreshToken(String userEmail) {
+        logger.debug("getRefreshToken:userEmail-{}  ",userEmail);
+        return loginMapper.getRefreshToken(userEmail);
+    }
+
+    @Override
+    public void delRefreshToken(String userEmail) {
+        logger.debug("deleRefreshToken:userEmail-{}  ",userEmail);
+        loginMapper.deleteRefreshToken(userEmail);
+    }
+
 }

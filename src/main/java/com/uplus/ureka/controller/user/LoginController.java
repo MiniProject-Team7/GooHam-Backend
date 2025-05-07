@@ -8,14 +8,20 @@ import com.uplus.ureka.service.user.login.LoginService;
 import com.uplus.ureka.service.user.login.LoginServiceImpl;
 import lombok.Getter;
 import lombok.Setter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import static io.netty.handler.codec.http.HttpStatusClass.SUCCESS;
 
 @RestController
 @RequestMapping("/gooham/users")
@@ -36,17 +42,21 @@ public class LoginController {
     private LoginServiceImpl loginServiceImpl;
 
 
+    private Logger logger = LoggerFactory.getLogger(getClass());
+
+
     @PostMapping("/login")
     public ResponseEntity<?> authenticateUser(@RequestBody MemberDTO memberDTO){
         try {
             // member_id > member_email, password 체크
-            MemberDTO authenticatedMember = loginService.checkLoin(memberDTO.getMember_email(), memberDTO.getMember_password());
+            MemberDTO authenticatedMember = loginService.checkLogin(memberDTO.getMember_email(), memberDTO.getMember_password());
 
             // JWT 토큰 생성 및 반환
-            String jwt = jwtUtils.createAccessToken(authenticatedMember.getMember_email(), authenticatedMember.getMember_name());
+            String accessToken = jwtUtils.createAccessToken(authenticatedMember.getMember_email());
+            String refreshToken = jwtUtils.createRefreshToken(authenticatedMember.getMember_email());
 
             // 여기에 토큰 저장 코드 추가
-            loginServiceImpl.saveVerificationToken(authenticatedMember.getMember_email(), jwt);
+            loginServiceImpl.saveVerificationToken(authenticatedMember.getMember_email(), refreshToken);
 
             // 원하는 응답 형식으로 구성
             Map<String, Object> userData = new HashMap<>();
@@ -55,7 +65,7 @@ public class LoginController {
             userData.put("member_name", authenticatedMember.getMember_name());
 
             Map<String, Object> data = new HashMap<>();
-            data.put("token", jwt);
+            data.put("token", accessToken);
             data.put("user", userData);
 
             Map<String, Object> response = new HashMap<>();
@@ -63,11 +73,11 @@ public class LoginController {
             response.put("message", "로그인 성공");
             response.put("data", data);
 
-            System.out.println("Authenticated Member ID: " + authenticatedMember.getMember_email());
+            logger.info("Authenticated Member ID: " + authenticatedMember.getMember_email());
             return ResponseEntity.ok(response);
         }
         catch (LoginException e){
-            System.out.println(e);
+            logger.error("Login failed: {}", e.getMessage());
             // 로그인 실패 시 형식 맞춤
             Map<String, Object> response = new HashMap<>();
             response.put("status", "fail");
@@ -76,7 +86,7 @@ public class LoginController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
         }
         catch (CustomExceptions e){
-            System.out.println(e);
+            logger.error("Authentication failed: {}", e.getMessage());
             // 인증 실패 형식 맞춤
             Map<String, Object> response = new HashMap<>();
             response.put("status", "fail");
@@ -85,8 +95,8 @@ public class LoginController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
         }
         catch(Exception e){
-            e.printStackTrace(); // 콘솔에 전체 스택 트레이스 출력
-            System.out.println("로그인 오류 상세: " + e.getMessage()); // 간략한 메시지 출력
+            logger.error("Login error: ", e); // 전체 스택 트레이스를 출력
+            logger.info("로그인 오류 상세: {}", e.getMessage()); // 간략한 메시지 출력            System.out.println("로그인 오류 상세: " + e.getMessage()); // 간략한 메시지 출력
 
             // 서버 오류 형식 맞춤
             Map<String, Object> response = new HashMap<>();
@@ -120,8 +130,17 @@ public class LoginController {
         try {
             String email = request.get("member_email");
 
-            // 토큰 삭제
+            // DB에서 refreshToken 삭제
             loginServiceImpl.logout(email);
+
+            // 쿠키 제거
+            ResponseCookie deleteCookie = ResponseCookie.from("Refresh_Token", "")
+                    .path("/")
+                    .maxAge(0)
+                    .httpOnly(true)
+                    .secure(true)
+                    .sameSite("Strict")
+                    .build();
 
             // 응답 생성
             Map<String, Object> response = new HashMap<>();
@@ -129,7 +148,9 @@ public class LoginController {
             response.put("message", "로그아웃 성공");
             response.put("data", null);
 
-            return ResponseEntity.ok(response);
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.SET_COOKIE, deleteCookie.toString())
+                    .body(response);
         } catch (Exception e) {
             e.printStackTrace();
 
@@ -142,5 +163,53 @@ public class LoginController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
+
+    private final String HEADER_AUTH = "Authorization";
+    private final String REFRESH_COOKIE = "Refresh_Token";
+
+    @PostMapping("/refresh")
+    //////TODO 8. refreshToken을 쿠키에서 받아 오기
+    public ResponseEntity<?> refresh( @RequestBody MemberDTO member
+            , @CookieValue(REFRESH_COOKIE) String refreshToken) {
+
+        logger.debug("refresh..............................refreshToken:{}", refreshToken);
+        String id = member.getMember_email();
+        Map<String, Object> result = new HashMap<>();
+        HttpStatus status = HttpStatus.OK;
+        HttpHeaders headers = new HttpHeaders();
+        try {
+            String myRefresh = loginService.getRefreshToken(id);
+            logger.debug("refresh..............................myRefresh:{}", myRefresh);
+            if(myRefresh.equals(refreshToken) && jwtUtils.validateToken(refreshToken)) {
+                String accessToken = jwtUtils.createAccessToken(member.getMember_email());
+                logger.debug("re id:{}  accessToken:{}", member.getMember_email(),  accessToken);
+                headers.add(HEADER_AUTH, accessToken);
+                result.put("message", SUCCESS);
+            }else {
+                logger.error("유효하지 않은 토큰");
+                result.put("message", "유효하지 않은 토큰");
+                status = HttpStatus.INTERNAL_SERVER_ERROR;
+            }
+        }catch (Exception e) {
+            logger.error("refresh 토큰 생성 실패:{}", e);
+            result.put("message", e.getMessage());
+            status = HttpStatus.INTERNAL_SERVER_ERROR;
+        }
+        return new ResponseEntity<Map<String, Object>>(result, headers, status);
+    }
+
+    public boolean isAuth(String userId, String authorHeader) {
+        logger.debug("search - Authorization:{}", authorHeader);
+        String token = authorHeader.replace("Bearer ", "");
+        if (!jwtUtils.validateToken(token))
+            return false;
+        String tokenId = jwtUtils.getUserEmail(authorHeader.replace("Bearer ", ""));
+        if (userId.equals(tokenId)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
 
 }
