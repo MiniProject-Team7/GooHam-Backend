@@ -88,7 +88,7 @@ public class JwtUtils {
     public String getUserEmail(String token){
         System.out.println("getUserEmail");
 
-        return Jwts.parserBuilder().setSigningKey(SALT).build().parseClaimsJws(token).getBody().getSubject();
+        return Jwts.parserBuilder().setSigningKey(getSigningKey()).build().parseClaimsJws(token).getBody().getSubject();
     }
 
     // HttpServletRequest에서 Authorization Header를 통해 access token을 추출하는 메서드입니다.
