@@ -39,7 +39,7 @@
 
     <update id="deleteRefreshToken" parameterType="string">
         update USERS
-        set refresh_token = ''
+        set refresh_token = NULL
         where member_email = #{member_email}
     </update>
 </mapper>
