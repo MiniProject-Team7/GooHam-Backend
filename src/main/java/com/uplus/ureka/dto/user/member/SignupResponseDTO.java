@@ -27,6 +27,7 @@ public class SignupResponseDTO {
         private String member_nickname;
         private String member_phone;
         private String member_introduce;
+        private String profile_image;
         @JsonFormat(pattern = "yyyy-MM-dd")
         private LocalDate birth_date;
     }

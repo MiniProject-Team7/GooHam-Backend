@@ -18,7 +18,7 @@ public class MyPageController {
     private MyPageServicelmpl myPageServicelmpl;
 
     // 이미지 사이즈 제한을 위함
-    private static final long MAX_IMAGE_SIZE = 1024 * 1024; // 500KB
+    private static final long MAX_IMAGE_SIZE = 2048 * 2048; // 500KB
 
 
     //회원 상세 페이지
@@ -68,17 +68,17 @@ public class MyPageController {
     }
 
     // 프로필 이미지 조회 (member_email로 검색)
-//    @GetMapping("/image")
-//    public ResponseEntity<String> getProfileImage(@RequestParam String member_email) {
-//        String imageUrl = myPageService.getProfileImageByMemberEmail(member_email);
-//        return ResponseEntity.ok(imageUrl);
-//    }
-
-    //네비게이션 바 이미지 띄우기
-    @GetMapping("/{memberId}/image")
-    public ResponseEntity<String> getProfileImage(@PathVariable  String memberId) {
-        String imageUrl = myPageServicelmpl.getProfileImageByMemberId(memberId);
+    @GetMapping("/image")
+    public ResponseEntity<String> getProfileImage(@RequestParam String id) {
+        String imageUrl = myPageServicelmpl.getProfileImageByMemberId(id);
         return ResponseEntity.ok(imageUrl);
     }
+
+    //네비게이션 바 이미지 띄우기
+//    @GetMapping("/{memberId}/image")
+//    public ResponseEntity<String> getProfileImage(@PathVariable  String memberId) {
+//        String imageUrl = myPageServicelmpl.getProfileImageByMemberId(memberId);
+//        return ResponseEntity.ok(imageUrl);
+//    }
 
 }

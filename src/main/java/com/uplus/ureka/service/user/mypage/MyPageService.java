@@ -15,6 +15,7 @@ public interface MyPageService {
     int updateMemberInfo(MyPageDTO memberInfo);
 
     //네비게이션에 이미지 띄우기
-    String getProfileImageByMemberId(String memberId);
+    //String getProfileImageByMemberId(String memberId);
 
+    String getProfileImageByMemberId(String memberId);
 }

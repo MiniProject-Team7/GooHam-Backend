@@ -58,7 +58,7 @@ public class MemberServiceImpl implements MemberService{
     @Override
     public boolean register(String member_email, String member_password, String member_name,
                             String member_nickname, String member_phone, String member_introduce,
-                            LocalDate birth_date) {
+                            LocalDate birth_date, String profile_image) {
 
         MemberSignupDTO memberDTO = new MemberSignupDTO();
         logger.info("암호화 전 비밀번호 : "+ member_password);
@@ -71,6 +71,7 @@ public class MemberServiceImpl implements MemberService{
         memberDTO.setMember_phone(member_phone);
         memberDTO.setMember_introduce(member_introduce);
         memberDTO.setBirth_date(birth_date);
+        memberDTO.setProfile_image(profile_image);
 
         int result = memberMapper.insert(memberDTO);
         return result == 1;
