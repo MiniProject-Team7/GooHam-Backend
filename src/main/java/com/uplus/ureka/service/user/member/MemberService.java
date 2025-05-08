@@ -9,7 +9,7 @@ public interface MemberService {
     //회원가입
     public boolean register(String member_email, String member_password, String member_name,
                             String member_nickname, String member_phone, String member_introduce,
-                            LocalDate birth_date);
+                            LocalDate birth_date, String profile_image);
 
     //아이디 중복 검사
     boolean isIdDuplicated(String member_nickname);

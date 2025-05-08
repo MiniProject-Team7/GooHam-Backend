@@ -31,6 +31,9 @@ public interface MyPageMapper {
 //    int updateMemberInfoDetail(MyPageDTO memberInfo);
 
     // 네비게이션에 이미지 띄우기
+    //String selectProfileImageByMemberId(String memberId);
+
+    // 프로필 이미지 조회
     String selectProfileImageByMemberId(String memberId);
 
 }
