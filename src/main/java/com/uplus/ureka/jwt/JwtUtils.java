@@ -1,6 +1,6 @@
 package com.uplus.ureka.jwt;
 
-import com.uplus.ureka.UnAuthorizedException;
+import com.uplus.ureka.exception.AuthException;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.MalformedJwtException;
@@ -103,7 +103,7 @@ public class JwtUtils {
     ////TODO 10. Access Token 만료시 Refresh Token을 이용해 새로운 Access Token 발급하는 메서드 작성하기
     public String generateAccessTokenFromRefreshToken(String refreshToken) {
         if (!validateToken(refreshToken)) {
-            throw new UnAuthorizedException(); // Refresh Token이 유효하지 않으면 예외 발생
+            throw new AuthException("세션이 만료되었습니다."); // Refresh Token이 유효하지 않으면 예외 발생
         }
         String userId = getUserEmail(refreshToken);
         return createAccessToken(userId); // 새로운 Access Token 생성

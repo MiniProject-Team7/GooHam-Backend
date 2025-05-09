@@ -35,3 +35,6 @@ out/
 
 ### VS Code ###
 .vscode/
+
+### S3 private Data ###
+/src/main/resources/application-private.properties
