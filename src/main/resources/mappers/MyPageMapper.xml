@@ -54,8 +54,8 @@
 
     <update id="updateProfileImage" parameterType="com.uplus.ureka.dto.user.Mypage.MyPageDTO">
         UPDATE USERS
-        SET profile_image = #{member_profile_image}
-        WHERE id = #{member_id}
+        SET profile_image = #{profile_image}
+        WHERE id = #{id}
     </update>
 
     <!-- 회원 정보 수정 (기본 정보와 상세 정보) -->
@@ -90,7 +90,7 @@
     <select id="selectProfileImageByMemberId" resultType="string">
         SELECT profile_image
         FROM USERS
-        WHERE id = #{memberId}
+        WHERE id = #{id}
     </select>
 
 

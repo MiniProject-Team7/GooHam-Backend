@@ -10,6 +10,7 @@ import java.sql.Blob;
 @AllArgsConstructor
 @Builder
 public class MemberDTO {
+    private String id;
 
     private String member_password;     //비밀번호
 
