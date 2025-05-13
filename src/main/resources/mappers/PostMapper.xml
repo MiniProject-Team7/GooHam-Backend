@@ -5,6 +5,23 @@
 
 <mapper namespace="com.uplus.ureka.repository.post.PostMapper">
 
+    <resultMap id="PostResultMap" type="com.uplus.ureka.dto.post.PostResponseDTO">
+        <result property="id" column="id"/>
+        <result property="userName" column="user_name"/>
+        <result property="title" column="title"/>
+        <result property="content" column="content"/>
+        <result property="maxParticipants" column="max_participants"/>
+        <result property="currentParticipants" column="current_participants"/>
+        <result property="categoryName" column="category_name"/>
+        <result property="status" column="status"/>
+        <result property="scheduleStart" column="schedule_start"/>
+        <result property="scheduleEnd" column="schedule_end"/>
+        <result property="location" column="location"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+        <result property="postImageJson" column="post_image"/> <!-- 이 줄 중요 -->
+    </resultMap>
+
     <!-- 모집 글 조회 -->
     <select id="findPostsWithFilters" resultType="com.uplus.ureka.dto.post.PostResponseDTO">
         SELECT
@@ -21,6 +38,7 @@
         p.location,
         p.created_at AS createdAt,
         p.updated_at AS updatedAt
+        p.post_image AS postImage
         FROM POSTS p
         LEFT JOIN USERS u ON p.user_id = u.id
         LEFT JOIN CATEGORIES c ON c.id = p.category_id
