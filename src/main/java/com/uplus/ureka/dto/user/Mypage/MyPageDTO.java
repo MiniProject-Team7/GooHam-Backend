@@ -22,7 +22,7 @@ public class MyPageDTO {
 
     private String member_nickname;     //닉네임
 
-    //private String member_profile_image;    //프로필사진
+    private String profile_image;    //프로필사진
 
     //private String ageGroup; // 연령대
 

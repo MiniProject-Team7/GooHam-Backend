@@ -11,6 +11,9 @@ import java.util.*;
 
 @Mapper
 public interface PostMapper {
+
+
+
     //사용자 존재 확인
     @Select("SELECT EXISTS(SELECT 1 FROM USERS WHERE ID = #{userId})")
     boolean checkUserExists(@Param("userId") Long userId);
@@ -21,8 +24,8 @@ public interface PostMapper {
 
 
     //모집 글 작성_id 자동 증가, userId는 자동 입력
-    @Insert("INSERT INTO POSTS (USER_ID, TITLE, CONTENT, MAX_PARTICIPANTS, CURRENT_PARTICIPANTS, CATEGORY_ID, STATUS, SCHEDULE_START, SCHEDULE_END, LOCATION, CREATED_AT, UPDATED_AT) " +
-            "VALUES (#{userId},  #{title}, #{content}, #{maxParticipants}, 1, #{categoryId}, '모집중', #{scheduleStart}, #{scheduleEnd}, #{location}, NOW(), NOW())")
+    @Insert("INSERT INTO POSTS (USER_ID, TITLE, CONTENT, MAX_PARTICIPANTS, CURRENT_PARTICIPANTS, CATEGORY_ID, STATUS, SCHEDULE_START, SCHEDULE_END, LOCATION, POST_IMAGE, CREATED_AT, UPDATED_AT) " +
+            "VALUES (#{userId},  #{title}, #{content}, #{maxParticipants}, 1, #{categoryId}, '모집중', #{scheduleStart}, #{scheduleEnd}, #{location}, #{postImage}, NOW(), NOW())")
     @Options(useGeneratedKeys = true, keyProperty = "postId", keyColumn = "id")
     void insertPost(PostRequestDTO requestDTO);
 
@@ -43,6 +46,7 @@ public interface PostMapper {
             SCHEDULE_START = COALESCE(#{scheduleStart}, SCHEDULE_START), 
             SCHEDULE_END = COALESCE(#{scheduleEnd}, SCHEDULE_END), 
             LOCATION = COALESCE(#{location}, LOCATION), 
+            POST_IMAGE = COALESCE(#{postImage}, POST_IMAGE),
             UPDATED_AT = NOW()
         WHERE ID = #{postId}
         """)
@@ -68,10 +72,30 @@ public interface PostMapper {
             @Param("scheduleEndBefore") LocalDateTime scheduleEndBefore
     );
 
+
+    @Results(id = "PostResult", value = {
+            @Result(column = "id",             property = "id",           id = true),
+            @Result(column = "userName",       property = "userName"),
+            @Result(column = "title",          property = "title"),
+            @Result(column = "content",        property = "content"),
+            @Result(column = "maxParticipants",property = "maxParticipants"),
+            @Result(column = "currentParticipants", property = "currentParticipants"),
+            @Result(column = "categoryName",   property = "categoryName"),
+            @Result(column = "status",         property = "status"),
+            @Result(column = "scheduleStart",  property = "scheduleStart"),
+            @Result(column = "scheduleEnd",    property = "scheduleEnd"),
+            @Result(column = "location",       property = "location"),
+            @Result(column = "createdAt",      property = "createdAt"),
+            @Result(column = "updatedAt",      property = "updatedAt"),
+            @Result(column = "postImage",      property = "postImageJson"),
+            // JSON 문자열 → List<String> 변환
+            @Result(column = "postImage",      property = "postImage",
+                    typeHandler = com.uplus.ureka.config.JsonListTypeHandler.class)
+    })
     //모집 글 상세 조회
     @Select("""
         SELECT 
-            P.ID AS ID,
+            P.ID AS id,
             U.MEMBER_NICKNAME AS userName,  -- AS 뒤에 별칭 수정
             P.TITLE AS title,
             P.CONTENT AS content,
@@ -83,7 +107,8 @@ public interface PostMapper {
             P.SCHEDULE_END AS scheduleEnd,
             P.LOCATION AS location,
             P.CREATED_AT AS createdAt,
-            P.UPDATED_AT AS updatedAt
+            P.UPDATED_AT AS updatedAt,
+            P.POST_IMAGE AS postImage
         FROM 
             POSTS P
         LEFT JOIN 

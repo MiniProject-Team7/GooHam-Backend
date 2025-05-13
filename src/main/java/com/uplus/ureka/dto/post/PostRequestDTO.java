@@ -22,4 +22,5 @@ public class PostRequestDTO {
     private LocalDateTime scheduleStart;
     private LocalDateTime scheduleEnd;
     private String location;
+    private String postImage;
 }

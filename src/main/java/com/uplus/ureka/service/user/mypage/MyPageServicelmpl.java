@@ -2,10 +2,13 @@ package com.uplus.ureka.service.user.mypage;
 
 import com.uplus.ureka.dto.user.Mypage.InterestDTO;
 import com.uplus.ureka.dto.user.Mypage.MyPageDTO;
+import com.uplus.ureka.service.s3.S3Service;
 import com.uplus.ureka.repository.user.mypage.MyPageMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.core.type.TypeReference;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -17,6 +20,9 @@ public class MyPageServicelmpl implements MyPageService{
     @Autowired
     private MyPageMapper mypageMapper;
 
+    @Autowired
+    private S3Service s3Service;
+
     //회원 데이터베이스에 저장된 데이터들을 가져옴
     @Override
     public MyPageDTO getMemberDetails(String member_email) {
@@ -26,40 +32,25 @@ public class MyPageServicelmpl implements MyPageService{
     // 회원의 프로필 이미지를 업데이트
     @Override
     public String updateProfileImage(String memberId, MultipartFile profileImage) {
-        int result = 0;
-        try {
-            String origFilename = profileImage.getOriginalFilename();
-//            String filename = new MD5Generator(origFilename).toString();
-            String filename = origFilename;
-            /* 실행되는 위치의 'files' 폴더에 파일이 저장됩니다. */
-//            String savePath = System.getProperty("user.dir") + "\\files";
-            //String savePath = "C:\\rcp\\teamproject_test_1\\src\\main\\reactfront\\public";
-            String savePath = "C:\\rcp\\teamproject_test_1\\src\\main\\resources\\static\\uploadimg";
-
-            /* 파일이 저장되는 폴더가 없으면 폴더를 생성합니다. */
-            if (!new File(savePath).exists()) {
-                try{
-                    new File(savePath).mkdir();
-                }
-                catch(Exception e){
-                    e.getStackTrace();
-                }
-            }
-            String filePath = savePath + "\\" + filename;
-            profileImage.transferTo(new File(filePath)); // 파일 저장
-
-            MyPageDTO myPageDTO = new MyPageDTO();
-            myPageDTO.setMember_email(memberId);
-            //myPageDTO.setMember_profile_image(filename);
-            System.out.println("==============================");
-            System.out.println("memberId:" + memberId + ",filename:" + filename);
-            //result = mypageMapper.updateProfileImage(myPageDTO);
-            return filename;
-        } catch(Exception e) {
-            e.printStackTrace();
+        if (profileImage == null || profileImage.isEmpty()) {
+            throw new IllegalArgumentException("이미지 파일이 비어있습니다.");
         }
-        return null;
-        //return mypageMapper.updateProfileImageByMemberId(memberId, profileImage);
+
+        String pathJson = s3Service.uploadFile(List.of(profileImage), "user");
+        List<String> paths;
+        try {
+            paths = new ObjectMapper().readValue(pathJson, new TypeReference<List<String>>() {});
+        } catch (Exception e) {
+            throw new RuntimeException("S3 업로드 경로 파싱 실패", e);
+        }
+
+        String profilePath = paths.get(0); // 단일 파일만 업로드
+        MyPageDTO dto = new MyPageDTO();
+        dto.setId(memberId); // id가 DB에서 userId
+        dto.setProfile_image(profilePath);
+        mypageMapper.updateProfileImage(dto);
+
+        return profilePath;
     }
 
 
