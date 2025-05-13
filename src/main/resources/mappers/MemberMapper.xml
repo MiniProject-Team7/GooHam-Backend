@@ -7,8 +7,8 @@
 
     <insert id="insert" parameterType="com.uplus.ureka.dto.user.member.MemberSignupDTO">
         INSERT INTO USERS (
-            member_email, member_password, member_nickname, member_name, member_introduce, member_phone, birth_date)
-        VALUES (#{member_email}, #{member_password}, #{member_nickname}, #{member_name}, #{member_introduce}, #{member_phone}, #{birth_date})
+            member_email, member_password, member_nickname, member_name, member_introduce, member_phone, birth_date, profile_image)
+        VALUES (#{member_email}, #{member_password}, #{member_nickname}, #{member_name}, #{member_introduce}, #{member_phone}, #{birth_date}, #{profile_image})
 </insert>
 
 

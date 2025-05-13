@@ -14,6 +14,7 @@
         u.member_nickname,
         u.member_introduce,
         u.member_phone,
+        u.profile_image,
         u.created_at,
         u.updated_at,
         ui.category_id,
@@ -34,6 +35,7 @@
         <result property="member_phone" column="member_phone"/>
         <result property="created_at" column="created_at"/>
         <result property="updated_at" column="updated_at"/>
+        <result property="profile_image" column="profile_image"/>
 
         <!-- 관심사 리스트 매핑 -->
         <collection property="interests" ofType="com.uplus.ureka.dto.user.Mypage.InterestDTO">
@@ -52,8 +54,8 @@
 
     <update id="updateProfileImage" parameterType="com.uplus.ureka.dto.user.Mypage.MyPageDTO">
         UPDATE USERS
-        SET member_profile_image = #{member_profile_image}
-        WHERE member_id = #{member_id}
+        SET profile_image = #{profile_image}
+        WHERE id = #{id}
     </update>
 
     <!-- 회원 정보 수정 (기본 정보와 상세 정보) -->
@@ -84,12 +86,12 @@
 <!--        WHERE member_id = #{member_id}-->
 <!--    </update>-->
 
-    <!-- 네비게이션 이미지 띄우기 -->
-<!--    <select id="selectProfileImageByMemberId" resultType="string">-->
-<!--        SELECT member_profile_image-->
-<!--        FROM USERS-->
-<!--        WHERE member_id = #{memberId}-->
-<!--    </select>-->
+    <!--  이미지 조회하기 -->
+    <select id="selectProfileImageByMemberId" resultType="string">
+        SELECT profile_image
+        FROM USERS
+        WHERE id = #{id}
+    </select>
 
 
 

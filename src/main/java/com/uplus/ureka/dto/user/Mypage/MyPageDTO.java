@@ -14,8 +14,6 @@ public class MyPageDTO {
 
     private String id; // 식별 번호
 
-    //private int details_id; //설문으로 받는 정보들을 판별할 id
-
     private String member_email; //이메일
 
     private String member_name; //이름
@@ -24,7 +22,7 @@ public class MyPageDTO {
 
     private String profile_image;    //프로필사진
 
-    //private String ageGroup; // 연령대
+    private String birth_date;  // 생일
 
     //private String category_name; //카테고리 이름
 

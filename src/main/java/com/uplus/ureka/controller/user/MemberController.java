@@ -45,6 +45,7 @@ public class MemberController {
         String member_email = memberSignupDTO.getMember_email();
         String member_phone = memberSignupDTO.getMember_phone();
         String member_introduce = memberSignupDTO.getMember_introduce();
+        String profile_image = memberSignupDTO.getProfile_image();
         LocalDate birth_date = memberSignupDTO.getBirth_date();
 
         // 이메일 중복 검사
@@ -64,7 +65,7 @@ public class MemberController {
         }
 
 
-        boolean result = memberService.register(member_email, member_password, member_name, member_nickname, member_phone, member_introduce, birth_date);
+        boolean result = memberService.register(member_email, member_password, member_name, member_nickname, member_phone, member_introduce, birth_date, profile_image);
 //        if (result) {
 //            // 성공 메시지를 담은 응답 생성
 //            Map<String, Object> response = new HashMap<>();
@@ -90,6 +91,7 @@ public class MemberController {
             userData.put("member_introduce", member_introduce);
             userData.put("birth_date", birth_date);
             userData.put("created_at", java.time.LocalDateTime.now().toString());
+            userData.put("profile_image", profile_image);
 
             response.put("status", "success");
             response.put("message", "회원 가입 성공");
@@ -105,7 +107,7 @@ public class MemberController {
         }
     }
 
-    //아이디 중복확인
+    //아이디 중복확인 (닉네임)
     @GetMapping("/checkIdDuplicate/{member_nickname}")
     public ResponseEntity<Map<String, Boolean>> checkIdDuplicate(@PathVariable String member_nickname) {
         logger.info("중복검사 넘어온 아이디 : "+member_nickname);

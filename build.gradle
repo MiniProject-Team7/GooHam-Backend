@@ -65,6 +65,9 @@ dependencies {
 	implementation 'com.sun.mail:jakarta.mail:2.0.1'
 	implementation 'jakarta.activation:jakarta.activation-api:2.1.2'
 
+	// S3
+	implementation 'com.amazonaws:aws-java-sdk-s3:1.12.678'
+
 }
 
 tasks.named('test') {

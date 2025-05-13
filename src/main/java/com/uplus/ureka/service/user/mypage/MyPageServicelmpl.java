@@ -1,17 +1,17 @@
 package com.uplus.ureka.service.user.mypage;
 
-import com.uplus.ureka.dto.user.Mypage.InterestDTO;
 import com.uplus.ureka.dto.user.Mypage.MyPageDTO;
 import com.uplus.ureka.service.s3.S3Service;
 import com.uplus.ureka.repository.user.mypage.MyPageMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.core.type.TypeReference;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
+
 import java.util.List;
 
 @Service
@@ -29,29 +29,54 @@ public class MyPageServicelmpl implements MyPageService{
         return mypageMapper.selectMemberDetailsById(member_email);
     }
 
-    // 회원의 프로필 이미지를 업데이트
+    // S3 프로필 이미지 업데이트
     @Override
-    public String updateProfileImage(String memberId, MultipartFile profileImage) {
-        if (profileImage == null || profileImage.isEmpty()) {
-            throw new IllegalArgumentException("이미지 파일이 비어있습니다.");
-        }
-
-        String pathJson = s3Service.uploadFile(List.of(profileImage), "user");
-        List<String> paths;
-        try {
-            paths = new ObjectMapper().readValue(pathJson, new TypeReference<List<String>>() {});
-        } catch (Exception e) {
-            throw new RuntimeException("S3 업로드 경로 파싱 실패", e);
-        }
-
-        String profilePath = paths.get(0); // 단일 파일만 업로드
-        MyPageDTO dto = new MyPageDTO();
-        dto.setId(memberId); // id가 DB에서 userId
-        dto.setProfile_image(profilePath);
-        mypageMapper.updateProfileImage(dto);
-
-        return profilePath;
+    public String updateProfileImage(String memberId, String fileName) {
+        MyPageDTO myPageDTO = new MyPageDTO();
+        myPageDTO.setId(memberId);
+        myPageDTO.setProfile_image(fileName);
+        mypageMapper.updateProfileImage(myPageDTO);
+        return fileName;
     }
+
+    // 회원의 프로필 이미지를 업데이트
+//    @Override
+//    public String updateProfileImage(String memberId, MultipartFile profileImage) {
+//        int result = 0;
+//        try {
+//            String origFilename = profileImage.getOriginalFilename();
+////            String filename = new MD5Generator(origFilename).toString();
+//            String filename = origFilename;
+//            /* 실행되는 위치의 'files' 폴더에 파일이 저장됩니다. */
+////            String savePath = System.getProperty("user.dir") + "\\files";
+//            //String savePath = "C:\\rcp\\teamproject_test_1\\src\\main\\reactfront\\public";
+//            String savePath = "C:\\Users\\teamproject_test_1\\src\\main\\resources\\static\\uploadimg";
+//
+//            /* 파일이 저장되는 폴더가 없으면 폴더를 생성합니다. */
+//            if (!new File(savePath).exists()) {
+//                try{
+//                    new File(savePath).mkdir();
+//                }
+//                catch(Exception e){
+//                    e.getStackTrace();
+//                }
+//            }
+//            String filePath = savePath + "\\" + filename;
+//            profileImage.transferTo(new File(filePath)); // 파일 저장
+//
+//            MyPageDTO myPageDTO = new MyPageDTO();
+//            myPageDTO.setMember_email(memberId);
+//            //myPageDTO.setMember_profile_image(filename);
+//            System.out.println("==============================");
+//            System.out.println("memberId:" + memberId + ",filename:" + filename);
+//            //result = mypageMapper.updateProfileImage(myPageDTO);
+//            return filename;
+//        } catch(Exception e) {
+//            e.printStackTrace();
+//        }
+//        return null;
+//        //return mypageMapper.updateProfileImageByMemberId(memberId, profileImage);
+//    }
 
 
     //회원의 정보를 업데이트
@@ -85,7 +110,15 @@ public class MyPageServicelmpl implements MyPageService{
         return 1;
     }
 
+
+
     // 네비게이션에 이미지 띄우기
+//    @Override
+//    public String getProfileImageByMemberId(String memberId) {
+//        return mypageMapper.selectProfileImageByMemberId(memberId);
+//    }
+
+    // 프로필 이미지
     @Override
     public String getProfileImageByMemberId(String memberId) {
         return mypageMapper.selectProfileImageByMemberId(memberId);

@@ -15,7 +15,7 @@ public interface MyPageMapper {
     MyPageDTO selectMemberDetailsById(String memberId);
 
     // 이미지 업로드
-//    int updateProfileImageByMemberId(String memberId, byte[] profileImage);
+    int updateProfileImageByMemberId(String memberId, byte[] profileImage);
     int updateProfileImage(MyPageDTO myPageDTO);
 
     // 회원 정보 수정(관심사 업데이트 경우 관심사 삭제하고 다시 insert)
@@ -31,6 +31,9 @@ public interface MyPageMapper {
 //    int updateMemberInfoDetail(MyPageDTO memberInfo);
 
     // 네비게이션에 이미지 띄우기
+    //String selectProfileImageByMemberId(String memberId);
+
+    // 프로필 이미지 조회
     String selectProfileImageByMemberId(String memberId);
 
 }

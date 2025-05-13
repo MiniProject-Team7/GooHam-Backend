@@ -9,6 +9,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -43,6 +44,7 @@ public class S3Service {
             String fileName = pathPrefix + "/" + originalName;
             logger.info("Preparing to upload file: original='{}', targetKey='{}'", file.getOriginalFilename(), fileName);
 
+
             ObjectMetadata objectMetadata = new ObjectMetadata();
             objectMetadata.setContentLength(file.getSize());
             objectMetadata.setContentType(file.getContentType());
@@ -68,6 +70,7 @@ public class S3Service {
         }
 
         return json;
+
     }
 
     // 파일명을 난수화하기 위해 UUID 를 활용하여 난수를 돌린다.
@@ -84,12 +87,12 @@ public class S3Service {
         }
     }
 
-    // 파일 경로로 파일을 불러오기
 
     public void deleteFile(String fileName){
         log.info("Deleting file: {}", fileName);
         amazonS3.deleteObject(new DeleteObjectRequest(bucket, fileName));
         System.out.println(bucket);
     }
+
 }
 
