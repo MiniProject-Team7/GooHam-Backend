@@ -1,5 +1,7 @@
 package com.uplus.ureka.controller.user;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.uplus.ureka.dto.user.Mypage.CommonResponseDTO;
 import com.uplus.ureka.dto.user.Mypage.MyPageDTO;
 import com.uplus.ureka.service.user.mypage.MyPageServicelmpl;
@@ -44,14 +46,13 @@ public class MyPageController {
         return ResponseEntity.ok(memberDetails);
     }
 
+
     // 회원의 프로필 이미지를 업로드하는 로직
     @PostMapping(value = "/uploadProfileImage", consumes = "multipart/form-data")
     public ResponseEntity<CommonResponseDTO> uploadProfileImage(
             @RequestParam String member_id,
             @Parameter
             @RequestParam("profileImage")  MultipartFile profileImage) {
-//        System.out.println("==============================");
-//        System.out.println("memberId:" + memberId);
 
         try {
             if (profileImage.isEmpty() || profileImage.getSize() > MAX_IMAGE_SIZE) {
@@ -59,20 +60,21 @@ public class MyPageController {
             }
 
             // S3에 업로드하고 파일명(또는 URL)을 받아옴
-            String uploadedFileName = s3Service.uploadFile(List.of(profileImage)).get(0);
+//            String uploadedFileName = s3Service.uploadFile(List.of(profileImage)).get(0);
+
+
+            // S3에 "user/" 경로로 업로드하고 파일명(또는 URL)을 받아옴
+            String uploadedFileNameJson = s3Service.uploadFile(List.of(profileImage), "user");
+            ObjectMapper objectMapper = new ObjectMapper();
+            List<String> uploadedFileNameList = objectMapper.readValue(uploadedFileNameJson, new TypeReference<List<String>>() {});
+            String uploadedFileName = uploadedFileNameList.get(0);
 
             // 업로드된 파일명을 DB에 저장
             myPageServicelmpl.updateProfileImage(member_id, uploadedFileName);
 
             return ResponseEntity.ok(new CommonResponseDTO("success", uploadedFileName));
 
-//            String filename = myPageServicelmpl.updateProfileImage(member_id, profileImage);
-//            if(filename != null)
-//                return ResponseEntity.ok(new CommonResponseDTO("success", filename));
-//            else
-//                return ResponseEntity.ok(new CommonResponseDTO("fail", ""));
         } catch (Exception e) {
-//            return ResponseEntity.badRequest().body("이미지 업로드 문제: " + e.getMessage());
             return ResponseEntity.ok(new CommonResponseDTO("fail", "이미지 업로드 문제: " + e.getMessage()));
         }
     }

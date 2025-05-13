@@ -5,8 +5,12 @@ import com.uplus.ureka.repository.user.mypage.MyPageMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class MyPageServicelmpl implements MyPageService{
@@ -29,6 +33,7 @@ public class MyPageServicelmpl implements MyPageService{
         mypageMapper.updateProfileImage(myPageDTO);
         return fileName;
     }
+
 
     // 회원의 프로필 이미지를 업데이트
 //    @Override
@@ -114,4 +119,5 @@ public class MyPageServicelmpl implements MyPageService{
     public String getProfileImageByMemberId(String memberId) {
         return mypageMapper.selectProfileImageByMemberId(memberId);
     }
+
 }
