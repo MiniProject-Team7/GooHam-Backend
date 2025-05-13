@@ -2,7 +2,7 @@ package com.uplus.ureka.dto.post;
 
 import lombok.Getter;
 import lombok.Setter;
-
+import java.util.*;
 import java.time.LocalDateTime;
 
 @Getter
@@ -21,11 +21,13 @@ public class PostResponseDTO {
     private String location;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private List<String> postImage;
+    private String postImageJson;
 
     public PostResponseDTO(Long id, String userName, String title, String content,
                            Long maxParticipants, Long currentParticipants, String categoryName,
                            String status, LocalDateTime scheduleStart, LocalDateTime scheduleEnd,
-                           String location, LocalDateTime createdAt, LocalDateTime updatedAt) {
+                           String location, LocalDateTime createdAt, LocalDateTime updatedAt, List<String> postImage) {
         this.id = id;
         this.userName = userName;
         this.title = title;
@@ -39,5 +41,6 @@ public class PostResponseDTO {
         this.location = location;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
+        this.postImage = postImage;
     }
 }

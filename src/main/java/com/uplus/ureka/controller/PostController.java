@@ -8,8 +8,11 @@ import com.uplus.ureka.service.post.PostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
 import java.time.LocalDateTime;
 
 import java.util.List;
@@ -49,18 +52,22 @@ public class PostController {
     }
 
     // 모집 글 작성
-    @PostMapping
-    public ResponseEntity<CustomResponseDTO<PostResponseDTO>> insertPost(@RequestBody PostRequestDTO requestDTO) {
-        PostResponseDTO response = postService.insertPost(requestDTO);
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(new CustomResponseDTO<>("success", "모집 글 작성 성공", response));
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<PostResponseDTO> insertPost(
+            @RequestPart("data") PostRequestDTO requestDTO,
+            @RequestPart(value = "files", required = false) List<MultipartFile> files
+    ) {
+        System.out.println("요청 DTO: " + requestDTO);
+        System.out.println(">>> multipartFiles = " + files);
+        return ResponseEntity.ok(postService.insertPost(requestDTO, files));
     }
 
     // 모집 글 수정
     @PatchMapping
     public ResponseEntity<CustomResponseDTO<PostResponseDTO>> updatePost(
-            @RequestBody PostRequestDTO requestDTO) {
-        PostResponseDTO response = postService.updatePost(requestDTO);
+            @RequestPart("data") PostRequestDTO requestDTO,
+            @RequestPart(value = "files", required = false) List<MultipartFile> files) {
+        PostResponseDTO response = postService.updatePost(requestDTO, files);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(new CustomResponseDTO<>("success", "모집 글 수정 성공", response));
     }

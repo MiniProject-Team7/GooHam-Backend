@@ -1,10 +1,16 @@
 package com.uplus.ureka.service.user.mypage;
 
 import com.uplus.ureka.dto.user.Mypage.MyPageDTO;
+import com.uplus.ureka.service.s3.S3Service;
 import com.uplus.ureka.repository.user.mypage.MyPageMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.core.type.TypeReference;
+import org.springframework.web.multipart.MultipartFile;
+
 
 import java.util.List;
 
@@ -13,6 +19,9 @@ public class MyPageServicelmpl implements MyPageService{
 
     @Autowired
     private MyPageMapper mypageMapper;
+
+    @Autowired
+    private S3Service s3Service;
 
     //회원 데이터베이스에 저장된 데이터들을 가져옴
     @Override
