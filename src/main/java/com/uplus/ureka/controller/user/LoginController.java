@@ -48,20 +48,15 @@ public class LoginController {
     @PostMapping("/login")
     public ResponseEntity<?> authenticateUser(@RequestBody MemberDTO memberDTO){
         try {
-            // member_id > member_email, password 체크
             MemberDTO authenticatedMember = loginService.checkLogin(memberDTO.getMember_email(), memberDTO.getMember_password());
 
-            // JWT 토큰 생성 및 반환
             String accessToken = jwtUtils.createAccessToken(authenticatedMember.getMember_email());
             String refreshToken = jwtUtils.createRefreshToken(authenticatedMember.getMember_email());
 
-            // 여기에 토큰 저장 코드 추가
             loginServiceImpl.saveVerificationToken(authenticatedMember.getMember_email(), refreshToken);
 
-            // 원하는 응답 형식으로 구성
             Map<String, Object> userData = new HashMap<>();
             userData.put("member_email", authenticatedMember.getMember_email());
-            //userData.put("member_nickname", authenticatedMember.getMember_nickname()); // 닉네임 필드가 있다고 가정
             userData.put("member_name", authenticatedMember.getMember_name());
 
             Map<String, Object> data = new HashMap<>();
@@ -74,7 +69,20 @@ public class LoginController {
             response.put("data", data);
 
             logger.info("Authenticated Member ID: " + authenticatedMember.getMember_email());
-            return ResponseEntity.ok(response);
+
+            // accessToken을 쿠키에 담아 보내기
+            ResponseCookie cookie = ResponseCookie.from("accessToken", accessToken)
+                    .httpOnly(true)
+                    .secure(true)
+                    .path("/")
+                    .sameSite("Strict")
+                    .maxAge(60 * 60)
+                    .build();
+
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.SET_COOKIE, cookie.toString())
+                    .body(response);
+
         }
         catch (LoginException e){
             logger.error("Login failed: {}", e.getMessage());
