@@ -8,6 +8,7 @@ import com.uplus.ureka.service.user.login.LoginService;
 import com.uplus.ureka.service.user.login.LoginServiceImpl;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.beans.factory.annotation.Value;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -71,16 +73,16 @@ public class LoginController {
             logger.info("Authenticated Member ID: " + authenticatedMember.getMember_email());
 
             // accessToken을 쿠키에 담아 보내기
-            ResponseCookie cookie = ResponseCookie.from("accessToken", accessToken)
+            ResponseCookie refreshCookie = ResponseCookie.from("Refresh_Token", refreshToken)
                     .httpOnly(true)
-                    .secure(true)
+                    .secure(false) // 운영환경에서는 true로!
                     .path("/")
-                    .sameSite("Strict")
-                    .maxAge(60 * 60)
+                    .sameSite("Lax")
+                    .maxAge(60 * 60 * 24 * 7) // 7일 예시
                     .build();
 
             return ResponseEntity.ok()
-                    .header(HttpHeaders.SET_COOKIE, cookie.toString())
+                    .header(HttpHeaders.SET_COOKIE, refreshCookie.toString())
                     .body(response);
 
         }
@@ -146,8 +148,8 @@ public class LoginController {
                     .path("/")
                     .maxAge(0)
                     .httpOnly(true)
-                    .secure(true)
-                    .sameSite("Strict")
+                    .secure(false)
+                    .sameSite("Lax")
                     .build();
 
             // 응답 생성
@@ -175,6 +177,9 @@ public class LoginController {
     private final String HEADER_AUTH = "Authorization";
     private final String REFRESH_COOKIE = "Refresh_Token";
 
+    @Value("${jwt.access-token.expiretime}")
+    private long accessTokenExpireTime;
+
     @PostMapping("/refresh")
     //////TODO 8. refreshToken을 쿠키에서 받아 오기
     public ResponseEntity<?> refresh( @RequestBody MemberDTO member
@@ -191,7 +196,15 @@ public class LoginController {
             if(myRefresh.equals(refreshToken) && jwtUtils.validateToken(refreshToken)) {
                 String accessToken = jwtUtils.createAccessToken(member.getMember_email());
                 logger.debug("re id:{}  accessToken:{}", member.getMember_email(),  accessToken);
-                headers.add(HEADER_AUTH, accessToken);
+                ResponseCookie cookie = ResponseCookie.from("accessToken", accessToken)
+                        .httpOnly(true)
+                        .secure(false) // 배포 환경에서는 true로!
+                        .sameSite("Lax")
+                        .path("/")
+                        .maxAge(Duration.ofMillis(accessTokenExpireTime)) // 적절한 시간 설정
+                        .build();
+
+                headers.add(HttpHeaders.SET_COOKIE, cookie.toString());
                 result.put("message", SUCCESS);
             }else {
                 logger.error("유효하지 않은 토큰");

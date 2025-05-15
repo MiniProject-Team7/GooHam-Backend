@@ -21,7 +21,8 @@ public class WebConfig implements WebMvcConfigurer {
                         "/gooham/users/login",      // 로그인
                         "/gooham/users/join",   // 회원가입
                         "/gooham/users/generateCode", // 비밀번호 찾기
-                        "/error"                  // Spring Boot 기본 에러 경로
+                        "/error",                  // Spring Boot 기본 에러 경로
+                        "/gooham/users/refresh", "/users/signup"
                 );
     }
 
@@ -31,6 +32,7 @@ public class WebConfig implements WebMvcConfigurer {
                 .allowedOriginPatterns("http://localhost:3000") // 또는 "*"
                 .allowedMethods("*")
                 .allowedHeaders("*")
-                .allowCredentials(true);
+                .allowCredentials(true)
+                .exposedHeaders("Set-Cookie");
     }
 }
