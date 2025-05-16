@@ -23,11 +23,12 @@ public class PostResponseDTO {
     private LocalDateTime updatedAt;
     private List<String> postImage;
     private String postImageJson;
+    private LocalDateTime eventStart;
 
     public PostResponseDTO(Long id, String userName, String title, String content,
                            Long maxParticipants, Long currentParticipants, String categoryName,
                            String status, LocalDateTime scheduleStart, LocalDateTime scheduleEnd,
-                           String location, LocalDateTime createdAt, LocalDateTime updatedAt, List<String> postImage) {
+                           String location, LocalDateTime createdAt, LocalDateTime updatedAt, List<String> postImage, LocalDateTime eventStart) {
         this.id = id;
         this.userName = userName;
         this.title = title;
@@ -42,5 +43,6 @@ public class PostResponseDTO {
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
         this.postImage = postImage;
+        this.eventStart = eventStart;
     }
 }

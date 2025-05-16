@@ -45,7 +45,10 @@ public class PostService {
         }
 
         postMapper.insertPost(requestDTO);
+        System.out.println("삽입된 postId: " + requestDTO.getPostId());
 
+        PostResponseDTO result = findPostById(requestDTO.getPostId());
+        System.out.println("조회된 결과: " + result);
         return findPostById(requestDTO.getPostId());
     }
 
@@ -63,10 +66,11 @@ public class PostService {
     // 모집 글 수정
     public PostResponseDTO updatePost(PostRequestDTO requestDTO,
                                       List<MultipartFile> multipartFiles) {
+
+        ObjectMapper objectMapper = new ObjectMapper();  // 클래스 필드에 있으면 중복 선언하지 않아도 됨
+        System.out.println("수정 요청 받은 requestDTO: " + requestDTO.toString());
+        System.out.println("삽입된 postId: " + requestDTO.getPostId());
         Long postId = requestDTO.getPostId();
-        if (!postMapper.checkExistPost(postId)) {
-            throw new ResourceExceptions("해당 모집 글이 존재하지 않습니다.");
-        }
 
         // 1) DB에서 기존 이미지 키 목록 꺼내오기
         String existingJson = postMapper.findPostById(postId).getPostImageJson();

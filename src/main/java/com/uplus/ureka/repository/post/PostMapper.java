@@ -19,13 +19,13 @@ public interface PostMapper {
     boolean checkUserExists(@Param("userId") Long userId);
 
     //모집 글 존재 확인_id로 식별
-    @Select("SELECT EXISTS(SELECT 1 FROM POSTS WHERE ID = #{postId} AND STATUS = '모집중')")
+    @Select("SELECT EXISTS(SELECT 1 FROM POSTS WHERE ID = #{postId} AND STATUS = '모집 중')")
     boolean checkExistPost(@Param("postId") Long postId);
 
 
     //모집 글 작성_id 자동 증가, userId는 자동 입력
-    @Insert("INSERT INTO POSTS (USER_ID, TITLE, CONTENT, MAX_PARTICIPANTS, CURRENT_PARTICIPANTS, CATEGORY_ID, STATUS, SCHEDULE_START, SCHEDULE_END, LOCATION, POST_IMAGE, CREATED_AT, UPDATED_AT) " +
-            "VALUES (#{userId},  #{title}, #{content}, #{maxParticipants}, 1, #{categoryId}, '모집중', #{scheduleStart}, #{scheduleEnd}, #{location}, #{postImage}, NOW(), NOW())")
+    @Insert("INSERT INTO POSTS (USER_ID, TITLE, CONTENT, MAX_PARTICIPANTS, CURRENT_PARTICIPANTS, CATEGORY_ID, STATUS, SCHEDULE_START, SCHEDULE_END, LOCATION, POST_IMAGE, CREATED_AT, UPDATED_AT, EVENT_START) " +
+            "VALUES (#{userId},  #{title}, #{content}, #{maxParticipants}, 1, #{categoryId}, '모집 중', #{scheduleStart}, #{scheduleEnd}, #{location}, #{postImage}, NOW(), NOW(), #{eventStart})")
     @Options(useGeneratedKeys = true, keyProperty = "postId", keyColumn = "id")
     void insertPost(PostRequestDTO requestDTO);
 
@@ -47,7 +47,8 @@ public interface PostMapper {
             SCHEDULE_END = COALESCE(#{scheduleEnd}, SCHEDULE_END), 
             LOCATION = COALESCE(#{location}, LOCATION), 
             POST_IMAGE = COALESCE(#{postImage}, POST_IMAGE),
-            UPDATED_AT = NOW()
+            UPDATED_AT = NOW(),
+            EVENT_START = COALESCE(#{eventStart}, EVENT_START)
         WHERE ID = #{postId}
         """)
     void updatePost(PostRequestDTO requestDTO);
@@ -90,7 +91,8 @@ public interface PostMapper {
             @Result(column = "postImage",      property = "postImageJson"),
             // JSON 문자열 → List<String> 변환
             @Result(column = "postImage",      property = "postImage",
-                    typeHandler = com.uplus.ureka.config.JsonListTypeHandler.class)
+                    typeHandler = com.uplus.ureka.config.JsonListTypeHandler.class),
+            @Result(column = "eventStart",     property = "eventStart")
     })
     //모집 글 상세 조회
     @Select("""
@@ -108,7 +110,8 @@ public interface PostMapper {
             P.LOCATION AS location,
             P.CREATED_AT AS createdAt,
             P.UPDATED_AT AS updatedAt,
-            P.POST_IMAGE AS postImage
+            P.POST_IMAGE AS postImage,
+            P.EVENT_START AS eventStart
         FROM 
             POSTS P
         LEFT JOIN 
