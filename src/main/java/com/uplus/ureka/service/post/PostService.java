@@ -119,7 +119,7 @@ public class PostService {
 
     //모집 글 조회
     public PageResponseDTO<PostResponseDTO> findPostsWithFilters(
-            Long categoryId, String status, String location,
+            Long userId, Long categoryId, String status, String location,
             LocalDateTime scheduleStartAfter, LocalDateTime scheduleEndBefore,
             String sortField, String sortOrder, Pageable pageable) {
 
@@ -128,11 +128,11 @@ public class PostService {
         RowBounds rowBounds = new RowBounds(offset, limit);
 
         List<PostResponseDTO> posts = postMapper.findPostsWithFilters(
-                categoryId, status, location, scheduleStartAfter, scheduleEndBefore,
+                userId, categoryId, status, location, scheduleStartAfter, scheduleEndBefore,
                 sortField, sortOrder, rowBounds
         );
 
-        long totalElements = postMapper.countPostsWithFilters(
+        long totalElements = postMapper.countPostsWithFilters( userId,
                 categoryId, status, location, scheduleStartAfter, scheduleEndBefore
         );
         Page<PostResponseDTO> page = new PageImpl<>(posts, pageable, totalElements);

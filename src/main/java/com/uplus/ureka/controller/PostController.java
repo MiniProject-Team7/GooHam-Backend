@@ -31,6 +31,7 @@ public class PostController {
     // 모집 글 조회
     @GetMapping
     public ResponseEntity<CustomResponseDTO<PageResponseDTO<PostResponseDTO>>> findPostsWithFilters(
+            @RequestParam(required = false) Long userId,
             @RequestParam(required = false) Long categoryId,
             @RequestParam(required = false) String status,
             @RequestParam(required = false) String location,
@@ -41,7 +42,7 @@ public class PostController {
             Pageable pageable) {
 
         PageResponseDTO<PostResponseDTO> response = postService.findPostsWithFilters(
-                categoryId, status, location, scheduleStartAfter, scheduleEndBefore,
+                userId, categoryId, status, location, scheduleStartAfter, scheduleEndBefore,
                 sortField, sortOrder, pageable
         );
         return ResponseEntity.ok(new CustomResponseDTO<>("success", "모집 글 목록 조회 성공", response));

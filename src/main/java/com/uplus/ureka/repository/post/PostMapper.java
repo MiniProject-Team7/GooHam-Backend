@@ -55,6 +55,7 @@ public interface PostMapper {
 
     //모집 글 조회
     List<PostResponseDTO> findPostsWithFilters(
+            @Param("userId") Long userId,
             @Param("categoryId") Long categoryId,
             @Param("status") String status,
             @Param("location") String location,
@@ -66,6 +67,7 @@ public interface PostMapper {
     );
 
     long countPostsWithFilters(
+            @Param("userId") Long userId,
             @Param("categoryId") Long categoryId,
             @Param("status") String status,
             @Param("location") String location,
@@ -122,4 +124,5 @@ public interface PostMapper {
             P.ID = #{postId}
         """)
     PostResponseDTO findPostById(@Param("postId") Long postId);
+
 }
