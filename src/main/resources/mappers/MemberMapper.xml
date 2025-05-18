@@ -5,11 +5,22 @@
 <mapper namespace="com.uplus.ureka.repository.user.member.MemberMapper">
 
 
-    <insert id="insert" parameterType="com.uplus.ureka.dto.user.member.MemberSignupDTO">
+    <insert id="insert" parameterType="com.uplus.ureka.dto.user.member.MemberSignupDTO" useGeneratedKeys="true"
+            keyProperty="id">
         INSERT INTO USERS (
             member_email, member_password, member_nickname, member_name, member_introduce, member_phone, birth_date, profile_image)
         VALUES (#{member_email}, #{member_password}, #{member_nickname}, #{member_name}, #{member_introduce}, #{member_phone}, #{birth_date}, #{profile_image})
-</insert>
+    </insert>
+
+
+    <insert id="insertMemberInterests"
+            parameterType="com.uplus.ureka.dto.user.member.MemberSignupDTO">
+        INSERT INTO USER_INTERESTS (user_id, category_id)
+        VALUES
+        <foreach collection="categoryIds" item="categoryId" separator=",">
+            (#{id}, #{categoryId})
+        </foreach>
+    </insert>
 
 
     <select id="isIdDuplicated" parameterType="java.lang.String" resultType="java.lang.Boolean">

@@ -97,11 +97,5 @@ public class MyPageController {
         return ResponseEntity.ok(imageUrl);
     }
 
-    //네비게이션 바 이미지 띄우기
-//    @GetMapping("/{memberId}/image")
-//    public ResponseEntity<String> getProfileImage(@PathVariable  String memberId) {
-//        String imageUrl = myPageServicelmpl.getProfileImageByMemberId(memberId);
-//        return ResponseEntity.ok(imageUrl);
-//    }
 
 }

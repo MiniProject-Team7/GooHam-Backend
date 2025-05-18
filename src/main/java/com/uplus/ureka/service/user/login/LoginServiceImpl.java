@@ -59,10 +59,6 @@ public class LoginServiceImpl implements LoginService, UserDetailsService {
         if (user.getDelflag() == 1) { // 추가: delflag가 1인 경우 예외 발생
             throw new CustomExceptions("이미 삭제된 계정입니다.");
         }
-        // password check
-
-//        if(!password.equals(user.getMember_password()))
-//            throw new CustomExceptions("password error");
 
        // 비밀번호 확인
         if(!passwordEncoder.matches(password, user.getMember_password()))

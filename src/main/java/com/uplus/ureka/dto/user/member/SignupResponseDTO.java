@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Getter
 @Setter
@@ -21,6 +22,7 @@ public class SignupResponseDTO {
     @NoArgsConstructor
     @Builder
     public static class UserInfo {
+        private String id;
         private String member_email;
         private String member_password;
         private String member_name;
@@ -30,5 +32,8 @@ public class SignupResponseDTO {
         private String profile_image;
         @JsonFormat(pattern = "yyyy-MM-dd")
         private LocalDate birth_date;
+
+        // 관심사 카테고리 ID만 따로 포함하는 필드 추가
+        private List<Integer> categoryIds;
     }
 }

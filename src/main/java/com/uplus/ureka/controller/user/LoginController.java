@@ -60,6 +60,7 @@ public class LoginController {
             Map<String, Object> userData = new HashMap<>();
             userData.put("member_email", authenticatedMember.getMember_email());
             userData.put("member_name", authenticatedMember.getMember_name());
+            userData.put("user_id", authenticatedMember.getId());
 
             Map<String, Object> data = new HashMap<>();
             data.put("token", accessToken);

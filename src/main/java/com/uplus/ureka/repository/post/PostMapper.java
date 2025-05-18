@@ -119,4 +119,31 @@ public interface PostMapper {
             P.ID = #{postId}
         """)
     PostResponseDTO findPostById(@Param("postId") Long postId);
+
+    @Select("""
+    SELECT
+        p.id,
+        u.member_nickname AS userName,
+        p.title,
+        p.content,
+        p.max_participants AS maxParticipants,
+        p.current_participants AS currentParticipants,
+        c.name AS categoryName,
+        p.status,
+        p.schedule_start AS scheduleStart,
+        p.schedule_end AS scheduleEnd,
+        p.location,
+        p.created_at AS createdAt,
+        p.updated_at AS updatedAt,
+        p.post_image AS postImage
+    FROM POSTS p
+    LEFT JOIN USERS u ON p.user_id = u.id
+    LEFT JOIN CATEGORIES c ON c.id = p.category_id
+    WHERE p.user_id = #{userId}
+    ORDER BY p.created_at DESC
+""")
+    @ResultMap("PostResult")
+    List<PostResponseDTO> findPostsByUserId(@Param("userId") Long userId);
+
+
 }

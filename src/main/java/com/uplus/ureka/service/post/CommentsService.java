@@ -86,4 +86,19 @@ public class CommentsService {
         Page<CommentsResponseDTO> page = new PageImpl<>(comments, pageable, totalElements);
         return new PageResponseDTO<>(page);
     }
+
+    public PageResponseDTO<CommentsResponseDTO> getCommentsByUserId(Long userId, String sort, Pageable pageable) {
+        int offset = (int) pageable.getOffset();
+        int limit = pageable.getPageSize();
+
+        if (sort == null || (!sort.equalsIgnoreCase("ASC") && !sort.equalsIgnoreCase("DESC"))) {
+            sort = "ASC";
+        }
+
+        List<CommentsResponseDTO> list = commentsMapper.findCommentsByUserId(userId, sort, new RowBounds(offset, limit));
+        long total = commentsMapper.countCommentsByUserId(userId);
+
+        Page<CommentsResponseDTO> page = new PageImpl<>(list, pageable, total);
+        return new PageResponseDTO<>(page);
+    }
 }

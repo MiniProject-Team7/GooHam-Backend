@@ -154,4 +154,8 @@ public class PostService {
         return dto;
     }
 
+    public List<PostResponseDTO> findPostsByUserId(Long userId) {
+        return postMapper.findPostsByUserId(userId);
+    }
+
 }

@@ -15,4 +15,7 @@ public interface MemberMapper {
 
     //이메일 중복검사
     boolean isEmailDuplicated(String member_email);
+
+    //  관심사(카테고리) 추가 (USER_INTERESTS insert)
+    void insertMemberInterests(MemberSignupDTO memberDTO);
 }

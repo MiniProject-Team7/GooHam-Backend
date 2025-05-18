@@ -52,4 +52,16 @@ public class CommentController {
     }
 
 
+    // CommentController.java
+    @GetMapping("/users/{userId}")
+    public ResponseEntity<CustomResponseDTO<PageResponseDTO<CommentsResponseDTO>>> getUserComments(
+            @PathVariable Long userId,
+            @RequestParam(value = "sort", required = false, defaultValue = "ASC") String sort,
+            Pageable pageable
+    ) {
+        PageResponseDTO<CommentsResponseDTO> response = commentsService.getCommentsByUserId(userId, sort, pageable);
+        return ResponseEntity.ok(new CustomResponseDTO<>("success", "내 댓글 조회 성공", response));
+    }
+
+
 }

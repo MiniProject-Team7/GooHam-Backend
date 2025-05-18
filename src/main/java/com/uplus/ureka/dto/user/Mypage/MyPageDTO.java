@@ -32,6 +32,8 @@ public class MyPageDTO {
     private String created_at;      // 생성시간
     private String updated_at;      // 업데이트 시간
 
+    private String notification_enable;
+
     private List<InterestDTO> interests;  // 관심사 리스트 추가
 
     // 관심사 카테고리 ID만 따로 포함하는 필드 추가
