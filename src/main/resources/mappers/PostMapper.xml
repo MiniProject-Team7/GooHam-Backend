@@ -46,6 +46,10 @@
         LEFT JOIN CATEGORIES c ON c.id = p.category_id
         WHERE 1=1
 
+        <if test="userId != null">
+            AND p.user_id = #{userId}
+        </if>
+
         <if test="categoryId != null">
             AND p.category_id = #{categoryId}
         </if>
