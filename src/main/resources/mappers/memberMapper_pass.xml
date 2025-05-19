@@ -5,12 +5,17 @@
 
 
     <update id="updateVerificationCode">
-        UPDATE USERS SET refresh_token = #{code} WHERE member_email = #{email} AND delflag != 1
+        UPDATE USERS SET verification_code = #{code} WHERE member_email = #{email} AND delflag != 1
     </update>
 
-    <select id="getPasswordByEmailAndVerification" resultType="string">
-        SELECT member_password FROM USERS WHERE member_email = #{email} AND refresh_token = #{code}
+    <select id="isVerificationCodeValid" resultType="int">
+        SELECT COUNT(*)
+        FROM USERS
+        WHERE member_email = #{email}
+          AND verification_code = #{code}
+          AND delflag != 1
     </select>
+
 
     <select id="getDelflagByEmail" resultType="integer">
         SELECT delflag FROM USERS WHERE member_email = #{email}

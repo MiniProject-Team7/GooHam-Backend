@@ -3,6 +3,7 @@ package com.uplus.ureka.service.user.change;
 import com.uplus.ureka.exception.CustomExceptions;
 import com.uplus.ureka.repository.user.change.MemberMapper_change_pw;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -15,19 +16,18 @@ public class MemberService_change_pw {
         this.mapper = mapper;
 
     }
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
-    public String changePassword(String email, String currentPassword, String newPassword){
+    public String changePassword(String email, String newPassword){
         if (emailNotExist(email)) {
             throw new CustomExceptions("현재 이메일로 가입된 계정이 없습니다. 다시 이메일을 확인해주세요");
         }
 
-        if (!verifyCurrentPassWord(email,currentPassword)) {
-            throw new CustomExceptions("현재 패스워드가 일치하지 않습니다. 다시 입력해주세요.");
-        }
+        String encodedPassword = passwordEncoder.encode(newPassword);
+        mapper.updateNewPassWordByEmail(email,encodedPassword);
 
-        mapper.updateNewPassWordByEmail(email,newPassword);
-
-        return "비밀번호가 변경되었습니다.";
+        return "비밀번호 변경 성공";
     }
 
     private boolean verifyCurrentPassWord(String email,String currentPass){

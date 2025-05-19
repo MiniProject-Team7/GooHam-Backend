@@ -52,11 +52,32 @@ public class MemberController_pass {
         return "인증번호가 회원님의 이메일로 발송되었습니다.";
     }
 
+//    @PostMapping("/verifyCode")
+//    @ResponseBody
+//    public String verifyCode(@RequestBody Map<String, Object> payload) {
+//        String email = (String) payload.get("email");
+//
+//        return memberServicePass.verifyCodeAndGetPassword(email, code);
+//    }
+
     @PostMapping("/verifyCode")
     @ResponseBody
     public String verifyCode(@RequestBody Map<String, Object> payload) {
         String email = (String) payload.get("email");
-        int code = (int) payload.get("code");
+
+        Object codeObj = payload.get("code");
+        if (email == null || codeObj == null) {
+            return "이메일 또는 인증번호가 누락되었습니다.";
+        }
+
+        int code;
+        try {
+            code = Integer.parseInt(codeObj.toString());
+        } catch (NumberFormatException e) {
+            return "인증번호 형식이 잘못되었습니다.";
+        }
+
         return memberServicePass.verifyCodeAndGetPassword(email, code);
     }
+
 }
