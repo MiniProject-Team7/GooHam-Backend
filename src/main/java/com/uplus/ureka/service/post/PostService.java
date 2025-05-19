@@ -141,10 +141,6 @@ public class PostService {
 
     //모집 글 상세 조회
     public PostResponseDTO findPostById(Long postId) {
-        if (!postMapper.checkExistPost(postId)) {
-            throw new ResourceExceptions("해당 모집 글이 존재하지 않습니다.");
-        }
-
         PostResponseDTO dto = postMapper.findPostById(postId);
 
         // JSON 파싱 수행

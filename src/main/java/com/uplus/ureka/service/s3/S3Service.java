@@ -1,5 +1,6 @@
 package com.uplus.ureka.service.s3;
 
+import com.amazonaws.HttpMethod;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.*;
 
@@ -18,9 +19,10 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
+import java.time.Duration;
+import java.net.URL;
+
 
 @Slf4j
 @Service
@@ -28,6 +30,16 @@ import java.util.UUID;
 public class S3Service {
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
+
+    public String generatePresignedUrl(String key, Duration validFor){
+        Date expiration = Date.from(java.time.Instant.now().plus(validFor));
+        GeneratePresignedUrlRequest req =
+                new GeneratePresignedUrlRequest(bucket, key)
+                        .withMethod(HttpMethod.GET)
+                        .withExpiration(expiration);
+        URL url = amazonS3.generatePresignedUrl(req);
+        return url.toString();
+    }
 
     private static final Logger logger = LoggerFactory.getLogger(S3Service.class);
 
@@ -70,7 +82,6 @@ public class S3Service {
         }
 
         return json;
-
     }
 
     // 파일명을 난수화하기 위해 UUID 를 활용하여 난수를 돌린다.
