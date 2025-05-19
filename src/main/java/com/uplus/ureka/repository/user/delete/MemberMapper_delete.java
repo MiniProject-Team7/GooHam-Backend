@@ -6,7 +6,7 @@ import org.apache.ibatis.annotations.Param;
 @Mapper
 public interface MemberMapper_delete {
 
-    void deleteByIdAndPassword(@Param("email") String id, @Param("password") String password);
+    void deleteByEmail(@Param("email") String id);
 
     String findUserById(@Param("email")String email);
 

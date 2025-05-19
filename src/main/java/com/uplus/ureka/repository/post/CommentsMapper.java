@@ -53,4 +53,20 @@ public interface CommentsMapper {
 
     @Select("SELECT USER_ID AS POST_USER_ID FROM POSTS WHERE ID = #{postId}")
     long getPostOwnerId(@Param("postId") Long postId);
+
+    // 내가 작성한 댓글
+
+
+    @Select("SELECT C.ID, C.POST_ID, C.USER_ID, U.MEMBER_NICKNAME AS USERNAME, C.CONTENT, C.CREATED_AT AS CREATEDAT, C.UPDATED_AT AS UPDATEDAT, C.IS_MODIFIED AS ISMODIFIED " +
+            "FROM COMMENTS C " +
+            "LEFT JOIN USERS U ON C.USER_ID = U.ID " +
+            "WHERE C.USER_ID = #{userId} " +
+            "ORDER BY C.CREATED_AT ${sort}")
+    List<CommentsResponseDTO> findCommentsByUserId(
+            @Param("userId") Long userId,
+            @Param("sort") String sort,
+            RowBounds rowBounds);
+
+    @Select("SELECT COUNT(*) FROM COMMENTS WHERE USER_ID = #{userId}")
+    long countCommentsByUserId(@Param("userId") Long userId);
 }

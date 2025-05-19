@@ -2,16 +2,19 @@ package com.uplus.ureka.service.user.delete;
 
 import com.uplus.ureka.repository.user.delete.MemberMapper_delete;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
 public class MemberService_delete {
 
     private final MemberMapper_delete mapper;
+    private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public MemberService_delete(MemberMapper_delete mapper){
+    public MemberService_delete(MemberMapper_delete mapper, PasswordEncoder passwordEncoder){
         this.mapper = mapper;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public String deleteAccount(String email, String password){
@@ -23,7 +26,7 @@ public class MemberService_delete {
             throw new IllegalArgumentException("현재 패스워드가 일치하지 않습니다. 다시 입력해주세요.");
         }
 
-        mapper.deleteByIdAndPassword(email, password);
+        mapper.deleteByEmail(email);
 
         return "계정이 성공적으로 삭제되었습니다.";
     }
@@ -36,7 +39,7 @@ public class MemberService_delete {
             throw new IllegalArgumentException("현재 아이디와 비밀번호가 일치하지 않습니다.");
         }
 
-        return password.equals(passwordFromDB);
+        return passwordEncoder.matches(password, passwordFromDB);
     }
 
     private boolean accountNotExist(String email) {

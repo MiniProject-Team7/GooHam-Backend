@@ -22,6 +22,8 @@ public class MemberDTO {
 
     private Blob profile_image;    //프로필사진
 
+
+
     private String member_introduce;    //소개
 
     private String member_phone;    //전화번호

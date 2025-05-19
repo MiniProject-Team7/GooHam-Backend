@@ -14,9 +14,11 @@
         u.member_nickname,
         u.member_introduce,
         u.member_phone,
+        u.birth_date,
         u.profile_image,
         u.created_at,
         u.updated_at,
+        u.notification_enable,
         ui.category_id,
         c.name AS category_name
         FROM USERS u
@@ -33,8 +35,10 @@
         <result property="member_nickname" column="member_nickname"/>
         <result property="member_introduce" column="member_introduce"/>
         <result property="member_phone" column="member_phone"/>
+        <result property="birth_date" column="birth_date"/>
         <result property="created_at" column="created_at"/>
         <result property="updated_at" column="updated_at"/>
+        <result property="notification_enable" column="notification_enable"/>
         <result property="profile_image" column="profile_image"/>
 
         <!-- 관심사 리스트 매핑 -->
@@ -61,7 +65,27 @@
     <!-- 회원 정보 수정 (기본 정보와 상세 정보) -->
     <update id="updateMemberInfo">
         UPDATE USERS
-        SET member_name = #{member_name}, member_nickname = #{member_nickname}, member_introduce=#{member_introduce}
+        <set>
+            <if test="member_name != null">
+                member_name = #{member_name},
+            </if>
+            <if test="member_nickname != null">
+                member_nickname = #{member_nickname},
+            </if>
+            <if test="member_introduce != null">
+                member_introduce = #{member_introduce},
+            </if>
+            <if test="member_phone != null">
+                member_phone = #{member_phone},
+            </if>
+            <if test="birth_date != null">
+                birth_date = #{birth_date},
+            </if>
+            <if test="profile_image != null">
+                profile_image = #{profile_image},
+            </if>
+            updated_at = NOW()
+        </set>
         WHERE id = #{id}
     </update>
 
@@ -79,12 +103,6 @@
     <insert id="insertMemberInterests">
         INSERT INTO USER_INTERESTS (user_id, category_id) VALUES (#{userId}, #{categoryId})
     </insert>
-
-<!--    <update id="updateMemberInfoDetail">-->
-<!--        UPDATE MemberDetail_tbl-->
-<!--        SET ageGroup = #{ageGroup}, category_name = #{category_name}-->
-<!--        WHERE member_id = #{member_id}-->
-<!--    </update>-->
 
     <!--  이미지 조회하기 -->
     <select id="selectProfileImageByMemberId" resultType="string">

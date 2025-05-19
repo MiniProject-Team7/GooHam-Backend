@@ -39,45 +39,6 @@ public class MyPageServicelmpl implements MyPageService{
         return fileName;
     }
 
-    // 회원의 프로필 이미지를 업데이트
-//    @Override
-//    public String updateProfileImage(String memberId, MultipartFile profileImage) {
-//        int result = 0;
-//        try {
-//            String origFilename = profileImage.getOriginalFilename();
-////            String filename = new MD5Generator(origFilename).toString();
-//            String filename = origFilename;
-//            /* 실행되는 위치의 'files' 폴더에 파일이 저장됩니다. */
-////            String savePath = System.getProperty("user.dir") + "\\files";
-//            //String savePath = "C:\\rcp\\teamproject_test_1\\src\\main\\reactfront\\public";
-//            String savePath = "C:\\Users\\teamproject_test_1\\src\\main\\resources\\static\\uploadimg";
-//
-//            /* 파일이 저장되는 폴더가 없으면 폴더를 생성합니다. */
-//            if (!new File(savePath).exists()) {
-//                try{
-//                    new File(savePath).mkdir();
-//                }
-//                catch(Exception e){
-//                    e.getStackTrace();
-//                }
-//            }
-//            String filePath = savePath + "\\" + filename;
-//            profileImage.transferTo(new File(filePath)); // 파일 저장
-//
-//            MyPageDTO myPageDTO = new MyPageDTO();
-//            myPageDTO.setMember_email(memberId);
-//            //myPageDTO.setMember_profile_image(filename);
-//            System.out.println("==============================");
-//            System.out.println("memberId:" + memberId + ",filename:" + filename);
-//            //result = mypageMapper.updateProfileImage(myPageDTO);
-//            return filename;
-//        } catch(Exception e) {
-//            e.printStackTrace();
-//        }
-//        return null;
-//        //return mypageMapper.updateProfileImageByMemberId(memberId, profileImage);
-//    }
-
 
     //회원의 정보를 업데이트
     @Override
@@ -109,14 +70,6 @@ public class MyPageServicelmpl implements MyPageService{
 
         return 1;
     }
-
-
-
-    // 네비게이션에 이미지 띄우기
-//    @Override
-//    public String getProfileImageByMemberId(String memberId) {
-//        return mypageMapper.selectProfileImageByMemberId(memberId);
-//    }
 
     // 프로필 이미지
     @Override

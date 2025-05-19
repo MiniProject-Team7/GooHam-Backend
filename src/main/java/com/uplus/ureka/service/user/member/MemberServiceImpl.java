@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Service
 @Transactional
@@ -24,41 +25,13 @@ public class MemberServiceImpl implements MemberService{
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    /* *//* 암호화 적용 O *//*
-    @Override
-    public boolean register(String member_id, String member_password, String member_name, String member_nickname,
-                            String member_email) {
-
-
-
-        logger.info("암호화 전 비밀번호 : "+ member_password);
-
-
-        String newPwd = passwordEncoder.encode(member_password);
-
-        logger.info("암호화 후 비밀번호 : "+ newPwd);
-
-
-        MemberDTO memberDTO = new MemberDTO();
-        memberDTO.setMember_id(member_id);
-        //memberDTO.setMember_password(member_password);
-        memberDTO.setMember_password(newPwd);
-        memberDTO.setMember_name(member_name);
-        memberDTO.setMember_nickname(member_nickname);
-        memberDTO.setMember_email(member_email);
-
-
-        int result = memberMapper.insert(memberDTO);
-        return result == 1;
-    }*/
-
 
     //암호화 적용
 
     @Override
     public boolean register(String member_email, String member_password, String member_name,
                             String member_nickname, String member_phone, String member_introduce,
-                            LocalDate birth_date, String profile_image) {
+                            LocalDate birth_date, String profile_image, List<Integer> categoryIds) {
 
         MemberSignupDTO memberDTO = new MemberSignupDTO();
         logger.info("암호화 전 비밀번호 : "+ member_password);
@@ -72,8 +45,14 @@ public class MemberServiceImpl implements MemberService{
         memberDTO.setMember_introduce(member_introduce);
         memberDTO.setBirth_date(birth_date);
         memberDTO.setProfile_image(profile_image);
+        memberDTO.setCategoryIds(categoryIds);
 
         int result = memberMapper.insert(memberDTO);
+
+        if (result == 1 && categoryIds != null && !categoryIds.isEmpty()) {
+            memberMapper.insertMemberInterests(memberDTO);
+        }
+
         return result == 1;
     }
 

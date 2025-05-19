@@ -3,8 +3,8 @@
 
 <mapper namespace="com.uplus.ureka.repository.user.delete.MemberMapper_delete">
 
-    <update id="deleteByIdAndPassword">
-        UPDATE USERS SET delflag = 1 WHERE member_email = #{email} AND member_password = #{password}
+    <update id="deleteByEmail">
+        UPDATE USERS SET delflag = 1 WHERE member_email = #{email}
     </update>
 
     <select id="findUserById" resultType="string">

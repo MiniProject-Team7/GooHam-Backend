@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Controller
@@ -28,12 +29,6 @@ public class MemberController {
     private  static final Logger logger
             = LoggerFactory.getLogger(MemberController.class);
 
-    //회원가입 폼
-//    @GetMapping("/register")
-//    public String register(){
-//        return "registerMem";
-//    }
-
 
     //회원가입
     @PostMapping("/join")
@@ -47,6 +42,8 @@ public class MemberController {
         String member_introduce = memberSignupDTO.getMember_introduce();
         String profile_image = memberSignupDTO.getProfile_image();
         LocalDate birth_date = memberSignupDTO.getBirth_date();
+        List categoryIds = memberSignupDTO.getCategoryIds();
+
 
         // 이메일 중복 검사
         if (memberService.isEmailDuplicated(member_email)) {
@@ -65,20 +62,7 @@ public class MemberController {
         }
 
 
-        boolean result = memberService.register(member_email, member_password, member_name, member_nickname, member_phone, member_introduce, birth_date, profile_image);
-//        if (result) {
-//            // 성공 메시지를 담은 응답 생성
-//            Map<String, Object> response = new HashMap<>();
-//            response.put("status", "success");
-//            response.put("message", "회원가입이 완료되었습니다.");
-//            return ResponseEntity.ok(response);
-//        } else {
-//            // 실패 메시지를 담은 응답 생성
-//            Map<String, Object> response = new HashMap<>();
-//            response.put("status", "error");
-//            response.put("message", "회원가입에 실패했습니다.");
-//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
-//        }
+        boolean result = memberService.register(member_email, member_password, member_name, member_nickname, member_phone, member_introduce, birth_date, profile_image, categoryIds);
         if (result) {
             // 성공 메시지와 사용자 데이터를 담은 응답 생성
             Map<String, Object> response = new HashMap<>();
