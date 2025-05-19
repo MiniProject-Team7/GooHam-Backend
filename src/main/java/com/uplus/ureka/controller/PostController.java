@@ -48,7 +48,7 @@ public class PostController {
         return ResponseEntity.ok(new CustomResponseDTO<>("success", "모집 글 목록 조회 성공", response));
     }
     // 내가 쓴 글 조회
-    @GetMapping("/{userId}")
+    @GetMapping("/users/{userId}")
     public ResponseEntity<CustomResponseDTO<List<PostResponseDTO>>> findMyPosts(@PathVariable Long userId) {
         List<PostResponseDTO> response = postService.findPostsByUserId(userId);
         return ResponseEntity.ok(new CustomResponseDTO<>("success", "내 게시글 조회 성공", response));
