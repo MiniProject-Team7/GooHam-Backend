@@ -44,7 +44,7 @@ public class MemberController_pass {
         // 이메일 전송
         MailTxtSendDto mailDto = new MailTxtSendDto();
         mailDto.setEmailAddr(email);
-        mailDto.setSubject("Ureka 비밀번호 찾기 인증코드");
+        mailDto.setSubject("GooHam 비밀번호 찾기 인증코드");
         mailDto.setContent("회원님의 인증번호는: " + codeNumber + " 입니다.");
 
         mailSendService.sendTxtEmail(mailDto);
