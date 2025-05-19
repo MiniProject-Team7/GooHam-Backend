@@ -68,20 +68,11 @@ public class NotificationService {
                 throw new CustomExceptions("잘못된 알림 타입입니다.");
         }
         //  저장된 `notification`을 기반으로 `NotificationResponseDTO` 생성하여 반환
-        return new NotificationResponseDTO(
-                notification.getId(),
-                notification.getUserId(),
-                notification.getPostId(),
-                notification.getPostUserId(),
-                notification.getParticipantId(),
-                notification.getType(),
-                false,
-                notification.getCreatedAt()
-        );
+        return notificationMapper.getsimpleNotifications(notification.getId());
     }
 
     // ✅ 사용자 ID로 알림 목록 조회
-    public List<Notification> getNotificationsByUserId(Long userId) {
+    public List<NotificationResponseDTO> getNotificationsByUserId(Long userId) {
         return notificationMapper.getNotifications(userId);
     }
 

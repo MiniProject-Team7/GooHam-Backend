@@ -13,8 +13,10 @@ public class NotificationResponseDTO implements Serializable {
     private Long id;
     private Long userId;
     private Long postId;
+    private String postTitle;
     private Long postUserId;
     private Long participantId;
+    private String participantName;
     private NotificationType type;
     private boolean isRead;
     private LocalDateTime createdAt;

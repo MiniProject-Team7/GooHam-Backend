@@ -27,8 +27,8 @@ public class NotificationController {
 
     // 알림 조회
     @GetMapping("/{userId}")
-    public ResponseEntity<CustomResponseDTO<List<Notification>>> getNotification(@PathVariable Long userId) {
-        List<Notification> notifications = notificationService.getNotificationsByUserId(userId);
+    public ResponseEntity<CustomResponseDTO<List<NotificationResponseDTO>>> getNotification(@PathVariable Long userId) {
+        List<NotificationResponseDTO> notifications = notificationService.getNotificationsByUserId(userId);
 
         if (notifications != null && !notifications.isEmpty()) {
             return ResponseEntity.ok(new CustomResponseDTO<>("success", "알림 목록을 불러왔습니다.", notifications));

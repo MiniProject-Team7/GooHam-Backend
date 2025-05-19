@@ -1,6 +1,7 @@
 package com.uplus.ureka.repository.notification;
 
 import com.uplus.ureka.domain.notification.Notification;
+import com.uplus.ureka.dto.notification.NotificationResponseDTO;
 import org.apache.ibatis.annotations.*;
 
 import java.util.List;
@@ -50,12 +51,54 @@ public interface NotificationMapper {
     void deleteNotifications(@Param("userId") Long userId);
 
     // 알림 조회 쿼리
-    @Select("<script>" +
-            "SELECT id, user_id AS userId, post_id AS postId, post_user_id AS postUserId, participant_id AS participantId, type, is_read AS isRead, created_at AS createdAt " +
-            "FROM NOTIFICATIONS WHERE user_id = #{userId} " +
-            "ORDER BY created_at DESC" +
-            "</script>")
-    List<Notification> getNotifications(@Param("userId") Long userId);
+    @Select("""
+      <script>
+        SELECT 
+          n.id,
+          n.user_id         AS userId,
+          n.post_id         AS postId,
+          p.title           AS postTitle,       <!-- 여기 추가 -->
+          n.post_user_id    AS postUserId,
+          n.participant_id  AS participantId,
+          u.member_nickname AS participantName,
+          n.type,
+          n.is_read         AS isRead,
+          n.created_at      AS createdAt
+        FROM NOTIFICATIONS n
+        JOIN POSTS p
+          ON n.post_id = p.id
+        JOIN USERS u
+          ON n.participant_id = u.id
+        WHERE n.user_id = #{userId}
+        ORDER BY n.created_at DESC
+      </script>
+    """)
+    List<NotificationResponseDTO> getNotifications(@Param("userId") Long userId);
+
+    //반환용 단일 알림 조회
+    @Select("""
+      <script>
+        SELECT 
+          n.id,
+          n.user_id         AS userId,
+          n.post_id         AS postId,
+          p.title           AS postTitle,       <!-- 여기 추가 -->
+          n.post_user_id    AS postUserId,
+          n.participant_id  AS participantId,
+          u.member_nickname AS participantName,
+          n.type,
+          n.is_read         AS isRead,
+          n.created_at      AS createdAt
+        FROM NOTIFICATIONS n
+        JOIN POSTS p
+          ON n.post_id = p.id
+        JOIN USERS u
+          ON n.participant_id = u.id
+        WHERE n.id = #{id}
+        ORDER BY n.created_at DESC
+      </script>
+    """)
+    NotificationResponseDTO getsimpleNotifications(@Param("id") Long id);
 
     // 기한이 지난 스케줄 조회
     @Select("SELECT ID FROM NOTIFICATIONS WHERE POST_ID IN (SELECT ID FROM POSTS WHERE SCHEDULE_END < NOW() -  INTERVAL 7 DAY)")

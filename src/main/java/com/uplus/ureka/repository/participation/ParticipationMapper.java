@@ -70,7 +70,7 @@ public interface ParticipationMapper {
             "FROM POST_PARTICIPANTS P " +
             "JOIN USERS U ON P.USER_ID = U.ID " +
             "JOIN POSTS PO ON P.POST_ID = PO.ID " +
-            "WHERE P.POST_ID = #{postId} " +
+            "WHERE P.POST_ID = #{postId} AND P.STATUS  = '대기' " +
             "ORDER BY P.JOINED_AT ASC")
     List<ParticipationResponseDTO> findAllParticipantsByPostId(@Param("postId") Long postId, RowBounds rowBounds);
 
