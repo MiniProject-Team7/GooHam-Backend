@@ -173,6 +173,20 @@ public class ParticipationService {
         return new PageResponseDTO<>(page);
     }
 
+    public PageResponseDTO<ParticipationResponseDTO> findAcceptedParticipantsByPostID(Long postId, Pageable pageable){
+        int offset = pageable.getPageNumber() * pageable.getPageSize();
+        int limit = pageable.getPageSize();
+
+        //MyBatis에서 페이징 적용
+        List<ParticipationResponseDTO> participants =
+                participationMapper.findAcceptedParticipantsByPostId(postId, new RowBounds(offset, limit));
+        long totalElements = participationMapper.countParticipantsByPostId(postId); // 전체 개수 조회
+
+        // Page 객체로 변환 후, PageResponseDTO로 감싸서 반환
+        Page<ParticipationResponseDTO> page = new PageImpl<>(participants, pageable, totalElements);
+        return new PageResponseDTO<>(page);
+    }
+
     public ParticipationResponseDTO findUserParticipationStatus(ParticipationRequestDTO requestDTO) {
         Long userId = requestDTO.getUserId();
         Long postId = requestDTO.getPostId();
@@ -187,9 +201,7 @@ public class ParticipationService {
         return participationMapper.findUserParticipationStatus(requestDTO.getUserId(), requestDTO.getPostId());
     }
 
-
-    @Scheduled(cron = "0 21 11 * * ?") // TEST
-//    @Scheduled(cron = "0 0 0 * * ?") // 매일 자정에 실행
+    @Scheduled(cron = "0 0 0 * * ?") // 매일 자정에 실행
     public void deleteEndedSchedules() {
         List<Long> pastSchedules = participationMapper.findPastSchedules();
 

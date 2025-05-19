@@ -22,19 +22,20 @@ public class MemberService_pass {
         mapper.updateVerificationCode(email, code);
     }
 
-    public String verifyCodeAndGetPassword(String email, int code){
+    public String verifyCodeAndGetPassword(String email, int code) {
         if (emailNotExist(email)) {
             throw new CustomExceptions("Email not found");
         }
 
-        String password = mapper.getPasswordByEmailAndVerification(email,code);
+        int valid = mapper.isVerificationCodeValid(email, code);
 
-        if (password == null) {
-            throw new CustomExceptions("Invalid verification code");
+        if (valid == 0) {
+            return "인증번호가 일치하지 않습니다.";
         }
 
-        return password;
+        return "인증되었습니다.";
     }
+
 
     private boolean emailNotExist(String email) {
         // 이메일이 존재하는지 확인하는 코드 작성
