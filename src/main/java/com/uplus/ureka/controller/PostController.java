@@ -16,6 +16,9 @@ import org.springframework.web.multipart.MultipartFile;
 import java.time.LocalDateTime;
 
 import java.util.List;
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 
 @RestController
 @RequestMapping("/gooham/posts")
@@ -28,6 +31,7 @@ public class PostController {
     // 모집 글 조회
     @GetMapping
     public ResponseEntity<CustomResponseDTO<PageResponseDTO<PostResponseDTO>>> findPostsWithFilters(
+            @RequestParam(required = false) Long userId,
             @RequestParam(required = false) Long categoryId,
             @RequestParam(required = false) String status,
             @RequestParam(required = false) String location,
@@ -38,7 +42,7 @@ public class PostController {
             Pageable pageable) {
 
         PageResponseDTO<PostResponseDTO> response = postService.findPostsWithFilters(
-                categoryId, status, location, scheduleStartAfter, scheduleEndBefore,
+                userId, categoryId, status, location, scheduleStartAfter, scheduleEndBefore,
                 sortField, sortOrder, pageable
         );
         return ResponseEntity.ok(new CustomResponseDTO<>("success", "모집 글 목록 조회 성공", response));
@@ -74,6 +78,13 @@ public class PostController {
             @RequestPart("data") PostRequestDTO requestDTO,
             @RequestPart(value = "files", required = false) List<MultipartFile> files) {
         PostResponseDTO response = postService.updatePost(requestDTO, files);
+
+        if (requestDTO == null) {
+            throw new IllegalArgumentException("RequestDTO가 null입니다. multipart 요청 형식을 확인해주세요.");
+        }
+
+        log.info("수정 요청 Post ID: {}", requestDTO.getPostId());
+        if (files != null) log.info("업로드 파일 수: {}", files.size());
         return ResponseEntity.status(HttpStatus.OK)
                 .body(new CustomResponseDTO<>("success", "모집 글 수정 성공", response));
     }
