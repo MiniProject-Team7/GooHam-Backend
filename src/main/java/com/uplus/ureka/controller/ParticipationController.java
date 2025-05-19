@@ -65,6 +65,14 @@ public class ParticipationController {
                 .body(new CustomResponseDTO<PageResponseDTO<ParticipationResponseDTO>>("success", "조회되었습니다.", response));
     }
 
+    @GetMapping("/accepted/{postId}")
+    public ResponseEntity<CustomResponseDTO<PageResponseDTO<ParticipationResponseDTO>>> findAcceptedParticipants(
+            @PathVariable Long postId, Pageable pageable) {
+        PageResponseDTO<ParticipationResponseDTO> response = participationService.findAcceptedParticipantsByPostID(postId, pageable);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(new CustomResponseDTO<PageResponseDTO<ParticipationResponseDTO>>("success", "조회되었습니다.", response));
+    }
+
     //  특정 사용자의 참여 신청 상태 조회
     @GetMapping("/{postId}/{userId}/status")
     public ResponseEntity<CustomResponseDTO<ParticipationResponseDTO>> findUserParticipationStatus(

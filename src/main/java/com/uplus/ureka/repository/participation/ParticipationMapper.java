@@ -23,7 +23,7 @@ public interface ParticipationMapper {
     boolean checkExistPost(@Param("postId") Long postId);
 
     // 유효한 신청 글 여부 확인 (모집중 상태인지 체크)
-    @Select("SELECT EXISTS (SELECT 1 FROM POSTS WHERE ID = #{postId} AND STATUS IN ('모집중'))")
+    @Select("SELECT EXISTS (SELECT 1 FROM POSTS WHERE ID = #{postId} AND STATUS IN ('모집 중'))")
     boolean checkPostStatusValid(@Param("postId") Long postId);
 
     // 승인 가능 여부 확인 (현재 참여 인원 < 최대 인원)
@@ -64,7 +64,7 @@ public interface ParticipationMapper {
             "AND (STATUS = '거절')")
     void deleteFromParticipationQueue(@Param("userId") Long userId, @Param("postId") Long postId);
 
-    // 특정 게시글의 전체 참여 현황 조회 (SELECT)
+    // 특정 게시글의 대기 상태의 참여 현황 조회 (SELECT)
     @Select("SELECT P.USER_ID AS userId, P.POST_ID AS postId, U.MEMBER_NICKNAME AS USERNAME, PO.TITLE, " +
             "P.STATUS, P.JOINED_AT AS joinedAt " +
             "FROM POST_PARTICIPANTS P " +
@@ -76,6 +76,16 @@ public interface ParticipationMapper {
 
     @Select("SELECT COUNT(*) FROM POST_PARTICIPANTS WHERE POST_ID = #{postId}")
     long countParticipantsByPostId(@Param("postId") Long postId);
+
+    // 특정 게시글의 승인 상태의 참여 현황 조회 (SELECT)
+    @Select("SELECT P.USER_ID AS userId, P.POST_ID AS postId, U.MEMBER_NICKNAME AS USERNAME, PO.TITLE, " +
+            "P.STATUS, P.JOINED_AT AS joinedAt " +
+            "FROM POST_PARTICIPANTS P " +
+            "JOIN USERS U ON P.USER_ID = U.ID " +
+            "JOIN POSTS PO ON P.POST_ID = PO.ID " +
+            "WHERE P.POST_ID = #{postId} AND P.STATUS  = '승인' " +
+            "ORDER BY P.JOINED_AT ASC")
+    List<ParticipationResponseDTO> findAcceptedParticipantsByPostId(@Param("postId") Long postId, RowBounds rowBounds);
 
     // 특정 사용자의 참여 신청 현황 조회 (SELECT)
     @Select("SELECT P.USER_ID AS userId, P.POST_ID AS postId, U.MEMBER_NICKNAME AS USERNAME, PO.TITLE, " +
