@@ -141,7 +141,8 @@ public interface PostMapper {
         p.location,
         p.created_at AS createdAt,
         p.updated_at AS updatedAt,
-        p.post_image AS postImage
+        p.post_image AS postImage,
+            p.event_start AS eventStart
     FROM POSTS p
     LEFT JOIN USERS u ON p.user_id = u.id
     LEFT JOIN CATEGORIES c ON c.id = p.category_id
