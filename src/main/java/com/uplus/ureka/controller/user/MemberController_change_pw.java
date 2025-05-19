@@ -43,12 +43,11 @@ public class MemberController_change_pw {
     @ResponseBody
     public Map<String, String> changePassword(@RequestBody Map<String, Object> payload) {
         String email = (String) payload.get("member_email");
-        String currentPassword = (String) payload.get("currentPassword");
         String newPassword = (String) payload.get("newPassword");
 
         Map<String, String> response = new HashMap<>();
-        response.put("message", memberServiceChangePw.changePassword(email, currentPassword, newPassword));
-
+        response.put("message", memberServiceChangePw.changePassword(email, newPassword));
+        System.out.println(response);
         return response;
     }
 }
