@@ -29,10 +29,6 @@ public interface MyPageMapper {
     void insertMemberInterests(@Param("userId") String userId, @Param("categoryId") Integer categoryId);
     // 특정 관심사 삭제
     void deleteSpecificMemberInterest(@Param("userId") String userId, @Param("categoryId") Integer categoryId);
-//    int updateMemberInfoDetail(MyPageDTO memberInfo);
-
-    // 네비게이션에 이미지 띄우기
-    //String selectProfileImageByMemberId(String memberId);
 
     // 프로필 이미지 조회
     String selectProfileImageByMemberId(String memberId);

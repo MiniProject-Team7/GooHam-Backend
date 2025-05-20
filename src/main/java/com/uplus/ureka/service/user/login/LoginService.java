@@ -10,9 +10,7 @@ public interface LoginService { // username(UserDetailsService 인터페이스�
     UserDetails loadUserByUsername(String username) throws UsernameNotFoundException;
     public MemberDTO checkLogin(String username, String password) throws LoginException;
 
-    void saveRefreshToken(String userEmail, String refreshToken) throws Exception;
-
     String getRefreshToken(String userEmail) throws Exception;
 
-    void delRefreshToken(String userEmail) throws Exception;
+
 }

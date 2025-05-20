@@ -21,7 +21,7 @@ public class MemberController_delete {
 
     @GetMapping("/delete")
     public String deleteAccountPage() {
-        return "delete";  // HTML 파일의 이름을 반환합니다.
+        return "delete";  // HTML 파일의 이름을 반환
     }
 
     @PostMapping("/delete_account")

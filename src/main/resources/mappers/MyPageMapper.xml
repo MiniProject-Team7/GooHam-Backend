@@ -49,13 +49,6 @@
     </resultMap>
 
 
-    <!-- 프로필 이미지 업데이트 -->
-    <!--    <update id="updateProfileImageByMemberId">-->
-    <!--        UPDATE Member_table-->
-    <!--        SET member_profile_image = #{profileImage}-->
-    <!--        WHERE member_id = #{member_id}-->
-    <!--    </update>-->
-
     <update id="updateProfileImage" parameterType="com.uplus.ureka.dto.user.Mypage.MyPageDTO">
         UPDATE USERS
         SET profile_image = #{profile_image}

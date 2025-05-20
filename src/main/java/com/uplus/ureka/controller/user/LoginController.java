@@ -76,10 +76,10 @@ public class LoginController {
             // accessToken을 쿠키에 담아 보내기
             ResponseCookie refreshCookie = ResponseCookie.from("Refresh_Token", refreshToken)
                     .httpOnly(true)
-                    .secure(false) // 운영환경에서는 true로!
+                    .secure(false)
                     .path("/")
                     .sameSite("Lax")
-                    .maxAge(60 * 60 * 24 * 7) // 7일 예시
+                    .maxAge(60 * 60 * 24 * 7) // 7일
                     .build();
 
             return ResponseEntity.ok()
@@ -106,8 +106,8 @@ public class LoginController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
         }
         catch(Exception e){
-            logger.error("Login error: ", e); // 전체 스택 트레이스를 출력
-            logger.info("로그인 오류 상세: {}", e.getMessage()); // 간략한 메시지 출력            System.out.println("로그인 오류 상세: " + e.getMessage()); // 간략한 메시지 출력
+            logger.error("Login error: ", e); // 전체 스택 트레이스를 출
+            logger.info("로그인 오류 상세: {}", e.getMessage());
 
             // 서버 오류 형식 맞춤
             Map<String, Object> response = new HashMap<>();
@@ -182,7 +182,6 @@ public class LoginController {
     private long accessTokenExpireTime;
 
     @PostMapping("/refresh")
-    //////TODO 8. refreshToken을 쿠키에서 받아 오기
     public ResponseEntity<?> refresh( @RequestBody MemberDTO member
             , @CookieValue(REFRESH_COOKIE) String refreshToken) {
 
@@ -199,7 +198,7 @@ public class LoginController {
                 logger.debug("re id:{}  accessToken:{}", member.getMember_email(),  accessToken);
                 ResponseCookie cookie = ResponseCookie.from("accessToken", accessToken)
                         .httpOnly(true)
-                        .secure(false) // 배포 환경에서는 true로!
+                        .secure(false) // 배포 환경에서는 true로 변경하기
                         .sameSite("Lax")
                         .path("/")
                         .maxAge(Duration.ofMillis(accessTokenExpireTime)) // 적절한 시간 설정

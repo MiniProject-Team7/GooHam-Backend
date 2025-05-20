@@ -52,14 +52,6 @@ public class MemberController_pass {
         return "인증번호가 회원님의 이메일로 발송되었습니다.";
     }
 
-//    @PostMapping("/verifyCode")
-//    @ResponseBody
-//    public String verifyCode(@RequestBody Map<String, Object> payload) {
-//        String email = (String) payload.get("email");
-//
-//        return memberServicePass.verifyCodeAndGetPassword(email, code);
-//    }
-
     @PostMapping("/verifyCode")
     @ResponseBody
     public String verifyCode(@RequestBody Map<String, Object> payload) {

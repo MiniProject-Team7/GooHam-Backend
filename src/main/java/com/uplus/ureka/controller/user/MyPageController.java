@@ -33,8 +33,6 @@ public class MyPageController {
     // 이미지 사이즈 제한을 위함
     private static final long MAX_IMAGE_SIZE = 5 * 1024 * 1024; // 5MB
 
-
-
     //회원 상세 페이지
     // memberId 파라미터를 받아 해당 회원의 상세 정보 페이지를 반환
     @GetMapping("/detail")
@@ -59,10 +57,6 @@ public class MyPageController {
                 throw new IllegalArgumentException("사이즈가 너무 큽니다.");
             }
 
-            // S3에 업로드하고 파일명(또는 URL)을 받아옴
-//            String uploadedFileName = s3Service.uploadFile(List.of(profileImage)).get(0);
-
-
             // S3에 "user/" 경로로 업로드하고 파일명(또는 URL)을 받아옴
             String uploadedFileNameJson = s3Service.uploadFile(List.of(profileImage), "user");
             ObjectMapper objectMapper = new ObjectMapper();
@@ -85,8 +79,6 @@ public class MyPageController {
         System.out.println("---------------------------------");
         System.out.println("memberInfo:" + memberInfo);
         myPageServicelmpl.updateMemberInfo(memberInfo);
-       //MyPageDTO updatedMember = myPageServicelmpl.updateMemberInfo(memberInfo);
-        //return "redirect:/mypage/detail?memberId=" + memberInfo.getMember_email();
         return ResponseEntity.ok(new CommonResponseDTO("success", "회원 정보가 성공적으로 업데이트되었습니다."));
     }
 

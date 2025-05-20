@@ -4,13 +4,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
-/**
- * SimpleMailMessage 기반 텍스트 메일 전송 DTO
- *
- * @author : jonghoon
- * @fileName : MailTxtSendDto
- * @since : 11/11/24
- */
 @Getter
 @Setter
 public class MailTxtSendDto {

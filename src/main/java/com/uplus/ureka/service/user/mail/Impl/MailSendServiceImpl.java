@@ -88,7 +88,6 @@ public class MailSendServiceImpl implements MailSendService {
             helper.setSubject(mailHtmlSendDto.getSubject());
             helper.setText(htmlContent, true);
             helper.setFrom(EMAIL_SENDER);
-//            helper.setFrom(FROM_USER);
             mailSender.send(message);
             System.out.println("Thymeleaf 템플릿 이메일 전송 성공!");
         } catch (MessagingException e) {
